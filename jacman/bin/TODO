@@ -1,0 +1,14 @@
+* Options dialog
+* Dialog showing pacman.conf settings
+* "Rollback" package functionality
+* Pacman defrag?
+* Use a better component for the console, such as JEditorPane to enable colour highlighting of output.
+  E.g., red text for errors.
+* Think of nice way to present exceptions. Currently they are all outputed to stderr. Some need
+  to be made visible.
+* Add i18n support to exception messages.
+* Add property to dispose the main frame once the user has selected an option.
+* Investigate work-around for curses based output in the console.
+* GPLify all classes
+
+** findRollbackPackages bug in parsing filenames and version numbers.
