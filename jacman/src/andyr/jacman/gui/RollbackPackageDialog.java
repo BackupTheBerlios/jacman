@@ -1,8 +1,6 @@
 package andyr.jacman.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -11,19 +9,19 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.BeanInfo;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,14 +33,11 @@ import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeCellRenderer;
 
 import org.apache.commons.collections.MultiHashMap;
 
@@ -51,8 +46,6 @@ import andyr.jacman.InstalledPacmanPkg;
 import andyr.jacman.Jacman;
 import andyr.jacman.PackageComparitor;
 import andyr.jacman.PackageNameComparitor;
-import andyr.jacman.PacmanPkg;
-import andyr.jacman.RemoveOptions;
 import andyr.jacman.SwingWorker;
 import andyr.jacman.console.ConsoleDialog;
 import andyr.jacman.utils.I18nManager;
@@ -65,11 +58,6 @@ import ca.odell.glazedlists.impl.beans.BeanTableFormat;
 import ca.odell.glazedlists.swing.EventTableModel;
 import ca.odell.glazedlists.swing.TableComparatorChooser;
 import ca.odell.glazedlists.swing.TextFilterList;
-
-import com.l2fprod.common.model.DefaultBeanInfoResolver;
-import com.l2fprod.common.propertysheet.Property;
-import com.l2fprod.common.propertysheet.PropertySheet;
-import com.l2fprod.common.propertysheet.PropertySheetPanel;
 
 public class RollbackPackageDialog extends JDialog {
 
@@ -88,11 +76,13 @@ public class RollbackPackageDialog extends JDialog {
     
     private JTree treeDepends;
     
-    private JLabel packageName = new JLabel();
-    private JLabel packageDesc = new JLabel();
+    //private JLabel packageName = new JLabel();
+    //private JLabel packageDesc = new JLabel();
     //private JLabel installDate = new JLabel();
-    private JLabel installedVersion = new JLabel();
-    private JLabel size = new JLabel();
+    //private JLabel installedVersion = new JLabel();
+    //private JLabel size = new JLabel();
+    private JLabel lblRollbackVersion = new JLabel();
+    private JComboBox cboRollbackVersion = new JComboBox();
     
     private EventList packageEventList = new BasicEventList();
     private SortedList sortedPackages;
@@ -101,7 +91,7 @@ public class RollbackPackageDialog extends JDialog {
     private InstallListFilter installListFiltered;
     private MultiHashMap map;
     
-    private CheckableTableFormat checkableTableFormat;
+    private PackageTableFormat tableFormat;
     
     private I18nManager i18n;
     private PropertiesManager jacmanProperties;
@@ -123,7 +113,6 @@ public class RollbackPackageDialog extends JDialog {
         
         sortedPackages = new SortedList(installListFiltered, new PackageComparitor());
         
-        
         textFilteredIssues = new TextFilterList(sortedPackages, new PackageTextFilterator());
         
         String[] propertyNames = {"name", "version", "description", "size"};
@@ -134,8 +123,10 @@ public class RollbackPackageDialog extends JDialog {
                 i18n.getString("PackageTableColumnSize") };
         
         
-        checkableTableFormat = new CheckableTableFormat(new BeanTableFormat(InstalledPacmanPkg.class, propertyNames, columnNames));
-        packagesTableModel = new EventTableModel(textFilteredIssues, checkableTableFormat);
+        //checkableTableFormat = new CheckableTableFormat(new BeanTableFormat(InstalledPacmanPkg.class, propertyNames, columnNames));
+        tableFormat = new PackageTableFormat(new BeanTableFormat(InstalledPacmanPkg.class, propertyNames, columnNames));
+        
+        packagesTableModel = new EventTableModel(textFilteredIssues, tableFormat);
         
         map = new MultiHashMap();
         
@@ -165,87 +156,30 @@ public class RollbackPackageDialog extends JDialog {
         
     private JPanel getPackageDescPanel() {
         
-
         if (pnlPackageDescPane == null) {
             
-            JPanel pnlPackageDesc = new JPanel();
+            pnlPackageDescPane = new JPanel(new GridBagLayout());
             
             GridBagConstraints gridBagConstraints;
             
-            getIgnoreDescPanel();
-    
-            JLabel lblPackageName = new JLabel(i18n.getString("DescPackageName"));
-            JLabel lblPackageDesc = new JLabel(i18n.getString("DescPackageDesc"));
-            JLabel lblInstalledVersion = new JLabel(i18n.getString("DescInstalledVersion"));
-            JLabel lblSize = new JLabel(i18n.getString("DescSize"));
-            
-            pnlPackageDesc.setLayout(new GridBagLayout());
+            JLabel lblRollbackVersion = new JLabel(i18n.getString("RollbackDialogLblRollbackVersion"));
             
             gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.insets = new Insets(0, 0, 0, 3);
             gridBagConstraints.anchor = GridBagConstraints.EAST;
-            pnlPackageDesc.add(lblPackageName, gridBagConstraints);
+            gridBagConstraints.gridheight = GridBagConstraints.REMAINDER;
+            gridBagConstraints.weighty = 1.0;
+            pnlPackageDescPane.add(lblRollbackVersion, gridBagConstraints);
 
-            
             gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.insets = new Insets(0, 3, 0, 0);
             gridBagConstraints.anchor = GridBagConstraints.WEST;
             gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
             gridBagConstraints.weightx = 1.0;
-            pnlPackageDesc.add(packageName, gridBagConstraints);
-
-            
-            gridBagConstraints = new GridBagConstraints();
-            gridBagConstraints.gridx = 0;
-            gridBagConstraints.gridy = 1;
-            gridBagConstraints.insets = new Insets(3, 0, 0, 0);
-            gridBagConstraints.anchor = GridBagConstraints.EAST;
-            pnlPackageDesc.add(lblPackageDesc, gridBagConstraints);
-            
-            gridBagConstraints = new GridBagConstraints();
-            gridBagConstraints.gridx = 1;
-            gridBagConstraints.gridy = 1;
-            gridBagConstraints.insets = new Insets(3, 3, 0, 0);
-            gridBagConstraints.anchor = GridBagConstraints.WEST;
-            gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
-            gridBagConstraints.weightx = 1.0;
-            pnlPackageDesc.add(packageDesc, gridBagConstraints);
-            
-            gridBagConstraints = new GridBagConstraints();
-            gridBagConstraints.gridx = 0;
-            gridBagConstraints.gridy = 2;
-            gridBagConstraints.insets = new Insets(3, 3, 0, 0);
-            gridBagConstraints.anchor = GridBagConstraints.EAST;
-            pnlPackageDesc.add(lblInstalledVersion, gridBagConstraints);
-            
-            gridBagConstraints = new GridBagConstraints();
-            gridBagConstraints.gridx = 1;
-            gridBagConstraints.gridy = 2;
-            gridBagConstraints.insets = new Insets(3, 3, 0, 0);
-            gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
-            gridBagConstraints.weightx = 1.0;
-            gridBagConstraints.anchor = GridBagConstraints.WEST;
-            pnlPackageDesc.add(installedVersion, gridBagConstraints);
-            
-            gridBagConstraints = new GridBagConstraints();
-            gridBagConstraints.gridx = 0;
-            gridBagConstraints.gridy = 3;
-            gridBagConstraints.insets = new Insets(3, 3, 0, 0);
-            gridBagConstraints.anchor = GridBagConstraints.EAST;
-            pnlPackageDesc.add(lblSize, gridBagConstraints);
-            
-            gridBagConstraints = new GridBagConstraints();
-            gridBagConstraints.gridx = 1;
-            gridBagConstraints.gridy = 3;
-            gridBagConstraints.insets = new Insets(3, 3, 0, 0);
-            gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
-            gridBagConstraints.weightx = 1.0;
-            gridBagConstraints.anchor = GridBagConstraints.WEST;
-            pnlPackageDesc.add(size, gridBagConstraints);
-            
-            pnlPackageDescPane = new JPanel(new BorderLayout());
-            JScrollPane scroll = new JScrollPane(pnlPackageDesc);
-            pnlPackageDescPane.add(scroll, BorderLayout.CENTER);
+            gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+            gridBagConstraints.gridheight = GridBagConstraints.REMAINDER;
+            gridBagConstraints.weighty = 1.0;
+            pnlPackageDescPane.add(cboRollbackVersion, gridBagConstraints);
             
         }
         
@@ -279,7 +213,6 @@ public class RollbackPackageDialog extends JDialog {
         ignoreDescPanel.add(ignoreText, gridBagConstraints);
         
         y++;
-        
         
         for (Iterator p = Jacman.pacmanConf.getIgnorePackages().iterator(); p.hasNext(); ) {
             
@@ -380,8 +313,9 @@ public class RollbackPackageDialog extends JDialog {
         getContentPane().add(horizontalSplit, BorderLayout.CENTER);
         JPanel buttonPanel = new JPanel(new EqualsLayout(EqualsLayout.HORIZONTAL, EqualsLayout.RIGHT, 3));
         buttonPanel.setBorder(new EmptyBorder(3,3,3,3));
-        JButton updateButton = new JButton(i18n.getString("UpdateDialogUpdateButton"));
-        updateButton.addActionListener(new ActionListener() {
+        JButton rollbackButton = new JButton(i18n.getString("UpdateDialogUpdateButton"));
+        rollbackButton.setEnabled(false);
+        rollbackButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
                 
@@ -390,10 +324,6 @@ public class RollbackPackageDialog extends JDialog {
                 commandArgs.add("--noconfirm");
                 commandArgs.add("-Syu");
                 
-                List selectedPackages = checkableTableFormat.getSelection();
-                for (Iterator p = selectedPackages.iterator(); p.hasNext();) {
-                    commandArgs.add("--ignore " + ((PacmanPkg)p.next()).getName());
-                }
                 
                 String[] command = new String[commandArgs.size()];
                 
@@ -417,7 +347,7 @@ public class RollbackPackageDialog extends JDialog {
             }
         
         });
-        buttonPanel.add(updateButton);
+        buttonPanel.add(rollbackButton);
         
         JButton closeButton = new JButton(i18n.getString("CloseButton"));
         closeButton.addActionListener(new ActionListener() {
@@ -439,11 +369,10 @@ public class RollbackPackageDialog extends JDialog {
 
     }
     
-
-    private void createViews() {
+  private void createViews() {
        
         ignoreView = new ElegantPanel(i18n.getString("UpdateDialogOptionsTitle"), getIgnoreDescPanel());
-        descView = new ElegantPanel(i18n.getString("UpdateDialogDescriptionTitle"), getPackageDescPanel());
+        descView = new ElegantPanel(i18n.getString("RollbackDialogRollbackVersionTitle"), getPackageDescPanel());
         packageView = new ElegantPanel(i18n.getString("UpdateDialogIgnorablePackagesTitle"), getPackageListPanel());
     }
   
@@ -525,29 +454,43 @@ public class RollbackPackageDialog extends JDialog {
         return tblPackageList;
     }
     
-    private void updateDescriptionPanel(String pkgName) { 
+    private void updateDescriptionPanel(String pkgName) {
         if (!pkgName.trim().equals("")) {
-            // Get the package from the package list and update the labels accordingly.
+            // Get the package from the package list and update the labels
+            // accordingly.
             InstalledPacmanPkg tmpPkg = new InstalledPacmanPkg();
-            tmpPkg.setName(pkgName); 
-            int index = Collections.binarySearch(packageEventList, tmpPkg, new PackageNameComparitor());
+            tmpPkg.setName(pkgName);
+            int index = Collections.binarySearch(packageEventList, tmpPkg,
+                    new PackageNameComparitor());
             if (index >= 0) {
-                InstalledPacmanPkg p = (InstalledPacmanPkg)packageEventList.get(index);
-                
-                List versions = (List)map.getCollection(p.getName());
-                for (Iterator v = versions.iterator(); v.hasNext();) {
+                DefaultComboBoxModel model = (DefaultComboBoxModel) cboRollbackVersion
+                        .getModel();
+                model.removeAllElements();
+
+                InstalledPacmanPkg p = (InstalledPacmanPkg) packageEventList.get(index);
+
+                List<String> versions = new ArrayList<String>();
+                for (Iterator v = ((List)map.get(p.getName())).iterator(); v.hasNext(); ) {
                     String element = (String) v.next();
+                    index = Collections.binarySearch(versions, element);
+                    if (index < 0) {
+                        versions.add((index + 1) * -1, element);
+                    }
+                }
+                
+                for (ListIterator v = versions.listIterator(versions.size()-1); v.hasPrevious();) {
                     
-                } 
-                
-                
-                
+                    model.addElement((String) v.previous());
+                    
+                }
+            
             }
             else {
-                System.err.println("Couldn't find " + pkgName + " in packageEventList");
+                System.err.println("Couldn't find " + pkgName
+                        + " in packageEventList");
             }
         }
-        
+
     }
     
 }
