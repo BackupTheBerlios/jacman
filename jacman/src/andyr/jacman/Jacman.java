@@ -212,9 +212,12 @@ public class Jacman {
     }
     
     public static void findRollbackPackages(EventList rollbackPkgsList, MultiHashMap map) {
-        rollbackPkgsList = new BasicEventList();
+        //rollbackPkgsList = new BasicEventList();
      
-        map = new MultiHashMap();
+        if (map == null) {
+            map = new MultiHashMap();    
+        }
+        
         
         File[] cachedPackages = pacmanConf.getCachePath().listFiles(fileFilter);
         for (int j = 0; j < cachedPackages.length; j++) {
@@ -226,16 +229,20 @@ public class Jacman {
                 
                 if (!filename.trim().equals("")) {
                 
-                    //System.out.println(filename);
-                    // Get rid of the extension as it's not needed
                     filename = filename.replace(".pkg.tar.gz", "");
-                    //String[] packageElements = filename.split("-");
-                    String name = filename.substring(0, filename.indexOf('-'));
+
+                    int revIndex = filename.lastIndexOf("-");
+                    String revision = filename.substring(revIndex+1);
                     
-                    String version = filename.substring(filename.indexOf('-') + 1);
-                    System.out.println(name + " " + version);
+                    int verIndex = filename.lastIndexOf("-", revIndex-1);
+                    
+                    String version = filename.substring(verIndex+1, revIndex);
+                    
+                    String name = filename.substring(0, verIndex);
+
+                    //System.out.println(name + " " + version+"-"+revision);
                     // add name and ver to map.
-                    map.put(name, version);
+                    map.put(name, version+"-"+revision);
                 }
                 
         }
@@ -252,15 +259,12 @@ public class Jacman {
                 
                 // Check that the filename isn't blank
                 if (!filename.trim().equals("")) {
-                
-                    // Get rid of the extension as it's not needed
-                    filename = filename.replace(".pkg.tar.gz", "");
-                    //String[] packageElements = filename.split("-");
-                    String name = filename.substring(0, filename.indexOf('-'));
-                    if (map.containsKey(name)) {
-                        if (map.getCollection(name).size() > 1) {
-    
-                            PacmanPkg currentPkg = new InstalledPacmanPkg(repoPackages[j]);
+                    PacmanPkg currentPkg = new InstalledPacmanPkg(repoPackages[j]);
+                    if (map.containsKey(currentPkg.getName())) {
+                        
+                        if (map.getCollection(currentPkg.getName()).size() > 1) {
+                            System.out.println(currentPkg.getName() + "(" + map.getCollection(currentPkg.getName()).size() + ")");
+                            
                             int index = Collections.binarySearch(rollbackPackages, currentPkg);
                             rollbackPackages.add((index + 1) * -1, currentPkg);
                         }
@@ -273,6 +277,7 @@ public class Jacman {
             }
         }
         rollbackPkgsList.addAll(rollbackPackages);
+        System.out.println(rollbackPkgsList.size());
         
     }
 
