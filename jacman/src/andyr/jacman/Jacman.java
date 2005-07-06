@@ -56,7 +56,6 @@ import andyr.jacman.gui.UpdatePackagesDialog;
 import andyr.jacman.utils.I18nManager;
 import andyr.jacman.utils.JacmanUtils;
 import andyr.jacman.utils.PropertiesManager;
-import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 
 import com.jgoodies.plaf.HeaderStyle;
@@ -125,20 +124,13 @@ public class Jacman {
         
     }
    
-   
     public static void findAvailablePackages(EventList availablePkgList, EventList installedPackages) {
         File dbPath = pacmanConf.getDbPath();
         
         List wantedRepos = pacmanConf.getRepositories();
 
         List<PacmanPkg> availablePackages = new ArrayList<PacmanPkg>();
-/*
-        FileFilter directoryFilter = new FileFilter() {
-            public boolean accept(File file) {
-                return file.isDirectory();
-            }
-        };
-*/
+
         File[] repoDirs = dbPath.listFiles(directoryFilter);
 
         for (int i = 0; i < repoDirs.length; i++) {
@@ -153,7 +145,6 @@ public class Jacman {
                                 currentPkg.setInstalledVersion(((PacmanPkg)installedPackages.get(index)).getVersion());
                             }
                             
-                            //PacmanPkg currentPkg = createPackage(repoPackages[j]);
                             index = Collections.binarySearch(availablePackages, currentPkg);
                             if (index < 0) {
                                 availablePackages.add((index + 1) * -1, currentPkg);
@@ -239,8 +230,7 @@ public class Jacman {
                     String version = filename.substring(verIndex+1, revIndex);
                     
                     String name = filename.substring(0, verIndex);
-
-                    //System.out.println(name + " " + version+"-"+revision);
+                    
                     // add name and ver to map.
                     map.put(name, version+"-"+revision);
                 }
@@ -263,7 +253,6 @@ public class Jacman {
                     if (map.containsKey(currentPkg.getName())) {
                         
                         if (map.getCollection(currentPkg.getName()).size() > 1) {
-                            System.out.println(currentPkg.getName() + "(" + map.getCollection(currentPkg.getName()).size() + ")");
                             
                             int index = Collections.binarySearch(rollbackPackages, currentPkg);
                             rollbackPackages.add((index + 1) * -1, currentPkg);
@@ -277,20 +266,7 @@ public class Jacman {
             }
         }
         rollbackPkgsList.addAll(rollbackPackages);
-        System.out.println(rollbackPkgsList.size());
         
-    }
-
-    public void printPackageList(List packageList) {
-
-        if (packageList != null) {
-
-            for (Iterator iterator = packageList.iterator(); iterator.hasNext();) {
-                PacmanPkg pacmanPkg = (PacmanPkg) iterator.next();
-
-                System.out.println(pacmanPkg);
-            }
-        }
     }
 
     private JTabbedPane getJacmanTabs() {
@@ -318,7 +294,7 @@ public class Jacman {
             fileExitMenuItem.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                    //System.exit(0);
+                    
                     jacmanFrame.dispose();
                 }
             });
@@ -329,7 +305,7 @@ public class Jacman {
             JMenu helpMenu = new JMenu(i18n.getString("JacmanFrameMenuHelp"));
 
             JMenuItem helpAboutMenuItem = new JMenuItem(i18n.getString("JacmanFrameMenuHelpAbout"), JacmanUtils.loadIcon("icons/about.png"));
-            //helpAboutMenuItem.setEnabled(false);
+            
             helpAboutMenuItem.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
@@ -372,10 +348,9 @@ public class Jacman {
                 public void actionPerformed(ActionEvent evt) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            //jacmanFrame.setVisible(false);
-                            InstallPackageDialog ipd = new InstallPackageDialog(jacmanFrame, i18n.getString("InstallDialogTitle"), false);
                             
-                            //ipd.postInit();
+                            InstallPackageDialog ipd = new InstallPackageDialog(jacmanFrame, i18n.getString("InstallDialogTitle"), false);
+
                         }
                     });
                 }
@@ -458,8 +433,7 @@ public class Jacman {
             rangee.add(copyright = new JLabel("© 2005 Andrew Roberts"));
             copyright.setFont(copyright.getFont().deriveFont(Font.BOLD));
             rangee.setBorder(new EmptyBorder(3, 3, 3, 3));
-            
-            
+                      
             rangee.add(Box.createHorizontalGlue());
             
             JButton quitButton;
@@ -495,12 +469,6 @@ public class Jacman {
         configureJGoodiesLAF();
         
         jacmanFrame = new JFrame("Jacman - " + JACMAN_VERSION_NUMBER);
-        
-        //jacmanFrame.setIconImage(Toolkit.getDefaultToolkit().getImage(java.net.URLClassLoader.getSystemResource("icons/jacman_logo.png")));
-        //jacmanFrame.setIconImage(new ImageIcon(java.net.URLClassLoader.getSystemResource("icons/jacman_logo_small.png")).getImage());
-
-
-        
         
         jacmanFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -538,8 +506,7 @@ public class Jacman {
         Options.setUseNarrowButtons(settings.isUseNarrowButtons());
 
         Options.setTabIconsEnabled(settings.isTabIconsEnabled());
-        //ClearLookManager.setMode(settings.getClearLookMode());
-        //ClearLookManager.setPolicy(settings.getClearLookPolicyName());
+        
         UIManager.put(Options.POPUP_DROP_SHADOW_ENABLED_KEY, settings.isPopupDropShadowEnabled());
 
         LookAndFeel selectedLaf = settings.getSelectedLookAndFeel();
@@ -591,6 +558,7 @@ public class Jacman {
     public static void main(final String[] args) {
 
         // EventDispatchThreadHangMonitor.initMonitoring();
+        
         /*
          * This is a bit of a hack. To allow anti-aliasing, I must read the
          * properties file before using any Swing classes and then set the Swing
