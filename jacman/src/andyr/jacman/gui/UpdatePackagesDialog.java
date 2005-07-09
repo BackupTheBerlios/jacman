@@ -42,7 +42,7 @@ import andyr.jacman.PackageComparitor;
 import andyr.jacman.PackageNameComparitor;
 import andyr.jacman.PacmanPkg;
 import andyr.jacman.SwingWorker;
-import andyr.jacman.console.NewConsoleDialog;
+import andyr.jacman.console.ConsoleDialog;
 import andyr.jacman.utils.I18nManager;
 import andyr.jacman.utils.JacmanUtils;
 import andyr.jacman.utils.PropertiesManager;
@@ -364,7 +364,7 @@ public class UpdatePackagesDialog extends JDialog {
                 
                 List<String> commandArgs = new ArrayList<String>();
                 commandArgs.add("pacman");
-                commandArgs.add("--noconfirm");
+                //commandArgs.add("--noconfirm");
                 commandArgs.add("-Syu");
                 
                 List selectedPackages = checkableTableFormat.getSelection();
@@ -381,7 +381,7 @@ public class UpdatePackagesDialog extends JDialog {
                 }
                 //System.out.println();
                 
-                new NewConsoleDialog(command, (Dialog)SwingUtilities.getRoot(UpdatePackagesDialog.this), i18n.getString("UpdateDialogConsoleTitle"), true);
+                new ConsoleDialog(command, (Dialog)SwingUtilities.getRoot(UpdatePackagesDialog.this), i18n.getString("UpdateDialogConsoleTitle"), true);
                 returnVal = UpdatePackagesDialog.PACMAN_RAN;
                 String dispose = jacmanProperties.getProperty("jacman.disposeMainMenu", "true");
                 if (dispose.equals("true") && returnVal == UpdatePackagesDialog.PACMAN_RAN) {

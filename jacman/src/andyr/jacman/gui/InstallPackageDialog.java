@@ -51,7 +51,6 @@ import andyr.jacman.PackageNameComparitor;
 import andyr.jacman.PacmanPkg;
 import andyr.jacman.SwingWorker;
 import andyr.jacman.console.ConsoleDialog;
-import andyr.jacman.console.NewConsoleDialog;
 import andyr.jacman.utils.I18nManager;
 import andyr.jacman.utils.JacmanUtils;
 import andyr.jacman.utils.PropertiesManager;
@@ -470,7 +469,7 @@ public class InstallPackageDialog extends JDialog {
                 
                 List commandArgs = new ArrayList();
                 commandArgs.add("pacman");
-                commandArgs.add("--noconfirm");
+                //commandArgs.add("--noconfirm");
                 commandArgs.addAll(options.getInstallOptionsArgs());
                 
                 List selectedPackages = checkableTableFormat.getSelection();
@@ -487,7 +486,7 @@ public class InstallPackageDialog extends JDialog {
                 }
                 //System.out.println();
                 
-                new NewConsoleDialog(command, (Dialog)SwingUtilities.getRoot(InstallPackageDialog.this), i18n.getString("InstallDialogConsoleTitle"), true);
+                new ConsoleDialog(command, (Dialog)SwingUtilities.getRoot(InstallPackageDialog.this), i18n.getString("InstallDialogConsoleTitle"), true);
                 returnVal = InstallPackageDialog.PACMAN_RAN;
                 String dispose = jacmanProperties.getProperty("jacman.disposeMainMenu", "true");
                 if (dispose.equals("true") && getReturnVal() == InstallPackageDialog.PACMAN_RAN) {

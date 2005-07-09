@@ -52,7 +52,6 @@ import andyr.jacman.PacmanPkg;
 import andyr.jacman.RemoveOptions;
 import andyr.jacman.SwingWorker;
 import andyr.jacman.console.ConsoleDialog;
-import andyr.jacman.console.NewConsoleDialog;
 import andyr.jacman.utils.I18nManager;
 import andyr.jacman.utils.JTableHelper;
 import andyr.jacman.utils.JacmanUtils;
@@ -374,7 +373,7 @@ public class RemovePackageDialog extends JDialog {
                
                 List<String> commandArgs = new ArrayList<String>();
                 commandArgs.add("pacman");
-                commandArgs.add("--noconfirm");
+                //commandArgs.add("--noconfirm");
                 commandArgs.addAll(options.getRemoveOptionsArgs());
                 
                 List selectedPackages = checkableTableFormat.getSelection();
@@ -390,7 +389,7 @@ public class RemovePackageDialog extends JDialog {
                 }
                
                 
-                new NewConsoleDialog(command, (Dialog)SwingUtilities.getRoot(RemovePackageDialog.this), i18n.getString("RemoveDialogConsoleTitle"), true);
+                new ConsoleDialog(command, (Dialog)SwingUtilities.getRoot(RemovePackageDialog.this), i18n.getString("RemoveDialogConsoleTitle"), true);
                 returnVal = RemovePackageDialog.PACMAN_RAN;
                 String dispose = jacmanProperties.getProperty("jacman.disposeMainMenu", "true");
                 if (dispose.equals("true") && returnVal == RemovePackageDialog.PACMAN_RAN) {
