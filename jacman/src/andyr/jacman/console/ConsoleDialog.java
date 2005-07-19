@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 import javax.swing.JButton;
@@ -19,6 +20,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import andyr.jacman.SwingWorker;
+import andyr.jacman.utils.I18nManager;
 
 /*
  * Created on Jun 19, 2005
@@ -27,17 +29,21 @@ import andyr.jacman.SwingWorker;
 
 public class ConsoleDialog extends JDialog {
 
-	JPanel consolePanel;
-	JPanel mainContent;
-	JButton noButton;
-	JButton yesButton;
-	JTextArea outputArea;
-	JButton btnCloseDialog;
-	ConsoleBufferVO consoleBufferVO;
+	private JPanel consolePanel;
+	private JPanel mainContent;
+	private JButton noButton;
+	private JButton yesButton;
+	private JTextArea outputArea;
+	private JButton btnCloseDialog;
+	private ConsoleBufferVO consoleBufferVO;
+    
+    private I18nManager i18n;
 
 	public ConsoleDialog(String[] command, Dialog owner, String title,
 			boolean modal) throws HeadlessException {
 		super(owner, title, modal);
+        
+        i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
 
 		setupGUI();
 
@@ -76,10 +82,10 @@ public class ConsoleDialog extends JDialog {
 
 		if (mainContent == null) {
 			mainContent = new JPanel(new BorderLayout());
-			mainContent.add(new JLabel("Console output:"), BorderLayout.NORTH);
+			mainContent.add(new JLabel(i18n.getString("ConsoleDialogLblOutput")), BorderLayout.NORTH);
 			mainContent.add(getConsolePanel(), BorderLayout.CENTER);
 
-			btnCloseDialog = new JButton("Done");
+			btnCloseDialog = new JButton(i18n.getString("ConsoleDialogBtnDone"));
 			btnCloseDialog.setEnabled(false);
 			btnCloseDialog.addActionListener(new ActionListener() {
 
@@ -97,7 +103,7 @@ public class ConsoleDialog extends JDialog {
 			buttonPanel.add(yesButton);
 			buttonPanel.add(noButton);
 			mainContent.add(buttonPanel, BorderLayout.SOUTH);
-			// mainContent.add(btnCloseDialog, BorderLayout.SOUTH);
+
 		}
 		return mainContent;
 	}
@@ -107,12 +113,10 @@ public class ConsoleDialog extends JDialog {
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		getContentPane().add(getMainContent(), BorderLayout.CENTER);
 		pack();
-
-		// setVisible(true);
 	}
 
 	private void initYesButton() {
-		yesButton = new JButton("Yes"); // i18n needed
+		yesButton = new JButton(i18n.getString("ConsoleDialogBtnYes"));
 		yesButton.setEnabled(false);
 		yesButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -142,7 +146,7 @@ public class ConsoleDialog extends JDialog {
 	}
 
 	private void initNoButton() {
-		noButton = new JButton("No"); // i18n needed
+		noButton = new JButton(i18n.getString("ConsoleDialogBtnNo"));
 		noButton.setEnabled(false);
 		noButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -166,7 +170,7 @@ public class ConsoleDialog extends JDialog {
 	}
 
 	private void runCommand(String[] command) {
-		// String[] cmd = {command, "-l", "/dev"};
+		
 		outputArea.append("# ");
 
 		for (int i = 0; i < command.length; i++) {
