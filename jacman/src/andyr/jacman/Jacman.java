@@ -78,7 +78,7 @@ public class Jacman {
     
     public static final String JACMAN_PROPERTIES_FILENAME = "jacman.properties";
     private final String JACMAN_NAME = "Jacman";
-    private final String JACMAN_VERSION_NUMBER = "0.1";
+    private final String JACMAN_VERSION_NUMBER = "0.2b";
     private final String JACMAN_DEV = "Andrew Roberts";
     private final String JACMAN_URL = "http://www.comp.leeds.ac.uk/andyr/";
     
@@ -543,10 +543,11 @@ public class Jacman {
         
         StringBuilder acks = new StringBuilder("<html>" + i18n.getString("AboutDialogAcknowledgments") + ":<br>");
         
+        acks.append("&nbsp;&nbsp;Jon-Anders Teigen (SoniX)" + "<br>");
+        acks.append("&nbsp;&nbsp;James Sudbury (Sudman1)" + "<br>");
         acks.append("&nbsp;&nbsp;Romain Guy" + "<br>");
         acks.append("&nbsp;&nbsp;Santhosh Kumar" + "<br>");
-        acks.append("&nbsp;&nbsp;Dusty Phillips" + "<br>");
-        acks.append("&nbsp;&nbsp;Sudman" + "<br>");
+        acks.append("&nbsp;&nbsp;Dusty Phillips (Dusty)" + "<br>");
         acks.append("&nbsp;&nbsp;John Lipsky");
         acks.append("</html>");
         
