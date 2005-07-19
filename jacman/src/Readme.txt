@@ -66,11 +66,7 @@ Known issues
 
 * The console within Jacman struggles to accurately display curses-based 
 applications. This means that the output displaying download progress of 
-packages looks odd. I'm not sure if there's much I can do to improve this as
-I believe it to be a limitation of Java's ability to execute native programs. 
-Alternatively, I could implement the downloading to within Jacman itself in 
-order to improve feedback, although I would prefer to avoid this. Let's see 
-what feedback I get.
+packages can look a bit odd odd. This will be improved to mimic pacmans output as correctly as possible.
 
 * Jacman obviously relies on a correctly formed pacman.conf. It's unlikely 
 that an ArchLinux could survive without one, and so I've not implemented any 
