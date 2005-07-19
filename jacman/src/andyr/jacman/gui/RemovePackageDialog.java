@@ -387,7 +387,6 @@ public class RemovePackageDialog extends JDialog {
                     command[i] = (String)commandArgs.get(i);
                      
                 }
-               
                 
                 new ConsoleDialog(command, (Dialog)SwingUtilities.getRoot(RemovePackageDialog.this), i18n.getString("RemoveDialogConsoleTitle"), true);
                 returnVal = RemovePackageDialog.PACMAN_RAN;
