@@ -12,3 +12,5 @@ Version 0.2
  - Some internal restructuring of classes and packages.
  - Did some spring-cleaning with the source. Namely the removal of unnecessary commented out
    lines of code.
+ - Added acknowledgements to Jon-Anders (SoniX) and added proper name for Sudman1.
+ - Added i18n support for ConsoleDialog.
