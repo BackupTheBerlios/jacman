@@ -4,7 +4,6 @@
  */
 package andyr.jacman;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,8 +55,6 @@ public class InstallOptions {
         }
         
         return args;
-        
-        //return args.toArray((String[])Array.newInstance(String.class, args.size()));
         
     }
 }
