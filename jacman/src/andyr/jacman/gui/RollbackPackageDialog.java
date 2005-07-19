@@ -9,6 +9,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.BeanInfo;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -41,11 +44,17 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import org.apache.commons.collections.MultiHashMap;
 
+import com.l2fprod.common.model.DefaultBeanInfoResolver;
+import com.l2fprod.common.propertysheet.Property;
+import com.l2fprod.common.propertysheet.PropertySheet;
+import com.l2fprod.common.propertysheet.PropertySheetPanel;
+
 import andyr.jacman.InstallListFilter;
 import andyr.jacman.InstalledPacmanPkg;
 import andyr.jacman.Jacman;
 import andyr.jacman.PackageComparitor;
 import andyr.jacman.PackageNameComparitor;
+import andyr.jacman.RemoveOptions;
 import andyr.jacman.SwingWorker;
 import andyr.jacman.console.ConsoleDialog;
 import andyr.jacman.utils.I18nManager;
@@ -63,25 +72,17 @@ public class RollbackPackageDialog extends JDialog {
 
     private JSplitPane horizontalSplit;
     private JSplitPane verticalSplit;
-    private JPanel pnlUpdateOptions;
     private JPanel pnlPackageDescPane;
     private JPanel pnlPackageList;
+    private JPanel pnlRollbackOptions;
     private JTextField txtSearch;
     
-    private ElegantPanel ignoreView;
+    private ElegantPanel optionsView;
     private ElegantPanel descView;
     private ElegantPanel packageView;
     
     private JTable tblPackageList;
     
-    private JTree treeDepends;
-    
-    //private JLabel packageName = new JLabel();
-    //private JLabel packageDesc = new JLabel();
-    //private JLabel installDate = new JLabel();
-    //private JLabel installedVersion = new JLabel();
-    //private JLabel size = new JLabel();
-    private JLabel lblRollbackVersion = new JLabel();
     private JComboBox cboRollbackVersion = new JComboBox();
     
     private EventList packageEventList = new BasicEventList();
@@ -92,6 +93,9 @@ public class RollbackPackageDialog extends JDialog {
     private MultiHashMap map;
     
     private PackageTableFormat tableFormat;
+    
+    // Rollback options are the same as the Remove options, so we will reuse.
+    private final RemoveOptions options = new RemoveOptions();
     
     private I18nManager i18n;
     private PropertiesManager jacmanProperties;
@@ -187,74 +191,36 @@ public class RollbackPackageDialog extends JDialog {
         
     }
 
-    private JPanel getIgnoreDescPanel() {
+ private JPanel getRollbackOptionsPanel() {
         
-        GridBagConstraints gridBagConstraints;
-        JPanel ignoreDescPanel = new JPanel(new GridBagLayout());
-        
-        JTextArea ignoreText = new JTextArea(i18n.getString("UpdateDialogIgnoreMessage"));
+        if (pnlRollbackOptions == null) {
+            pnlRollbackOptions = new JPanel(new BorderLayout());
+            DefaultBeanInfoResolver resolver = new DefaultBeanInfoResolver();
+             
+            BeanInfo beanInfo = resolver.getBeanInfo(options);
 
-        ignoreText.setLineWrap(true);
-        ignoreText.setWrapStyleWord(true);
-        ignoreText.setOpaque(false);
-        ignoreText.setEditable(false);
-        
-        int x = 0;
-        int y = 0;
-        
-        gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.gridx = x;
-        gridBagConstraints.gridy = y;
-        gridBagConstraints.insets = new Insets(0, 3, 0, 0);
-        gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
-        gridBagConstraints.weightx = 1.0;
-        ignoreDescPanel.add(ignoreText, gridBagConstraints);
-        
-        y++;
-        
-        for (Iterator p = Jacman.pacmanConf.getIgnorePackages().iterator(); p.hasNext(); ) {
+            PropertySheetPanel sheet = new PropertySheetPanel();
+            sheet.setMode(PropertySheet.VIEW_AS_CATEGORIES);
+            sheet.setProperties(beanInfo.getPropertyDescriptors());
+            sheet.readFromObject(options);
+            sheet.setDescriptionVisible(true);
+            sheet.setSortingCategories(true);
+            sheet.setSortingProperties(true);
+            pnlRollbackOptions.add(sheet, BorderLayout.CENTER);
+
+            // everytime a property change, update the button with it
+            PropertyChangeListener listener = new PropertyChangeListener() {
+              public void propertyChange(PropertyChangeEvent evt) {
+                Property prop = (Property)evt.getSource();
+                prop.writeToObject(options);
+                
+              }
+            };
+            sheet.addPropertySheetChangeListener(listener);
             
-            JLabel lblCurrentPkg = new JLabel((String)p.next());
-            
-            gridBagConstraints = new GridBagConstraints();
-            gridBagConstraints.gridx = x;
-            gridBagConstraints.gridy = y;
-            gridBagConstraints.insets = new Insets(2, 6, 0, 0);
-            gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-            
-            /*if (!p.hasNext()) {
-                gridBagConstraints.gridheight = GridBagConstraints.REMAINDER;
-                gridBagConstraints.weighty = 1.0;
-            }*/
-            
-            ignoreDescPanel.add(lblCurrentPkg, gridBagConstraints);
-            
-            y++;
         }
         
-
-        JTextArea ignorePrompt = new JTextArea(i18n.getString("UpdateDialogIgnorePrompt"));
-
-        ignorePrompt.setLineWrap(true);
-        ignorePrompt.setWrapStyleWord(true);
-        ignorePrompt.setOpaque(false);
-        ignorePrompt.setEditable(false);
-        
-        gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.gridx = x;
-        gridBagConstraints.gridy = y;
-        gridBagConstraints.insets = new Insets(12, 3, 0, 0);
-        gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.gridheight = GridBagConstraints.REMAINDER;
-        gridBagConstraints.weighty = 1.0;
-        ignoreDescPanel.add(ignorePrompt, gridBagConstraints);
-        
-        return ignoreDescPanel;
+        return pnlRollbackOptions;
     }
     
     private JPanel getPackageListPanel() {
@@ -282,7 +248,6 @@ public class RollbackPackageDialog extends JDialog {
                 
             });
             Dimension d = eraseSearch.getPreferredSize();
-            Dimension d1 = lblSearch.getPreferredSize();
             d.setSize(icon.getIconWidth() * 2, txtSearch.getPreferredSize().getHeight());
             eraseSearch.setPreferredSize(d);
             
@@ -314,16 +279,14 @@ public class RollbackPackageDialog extends JDialog {
         JPanel buttonPanel = new JPanel(new EqualsLayout(EqualsLayout.HORIZONTAL, EqualsLayout.RIGHT, 3));
         buttonPanel.setBorder(new EmptyBorder(3,3,3,3));
         JButton rollbackButton = new JButton(i18n.getString("UpdateDialogUpdateButton"));
-        rollbackButton.setEnabled(false);
         rollbackButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
                 
                 List<String> commandArgs = new ArrayList<String>();
                 commandArgs.add("pacman");
-                commandArgs.add("--noconfirm");
-                commandArgs.add("-Syu");
-                
+                commandArgs.addAll(options.getRemoveOptionsArgs());
+                commandArgs.add((String)cboRollbackVersion.getSelectedItem());
                 
                 String[] command = new String[commandArgs.size()];
                 
@@ -371,9 +334,9 @@ public class RollbackPackageDialog extends JDialog {
     
   private void createViews() {
        
-        ignoreView = new ElegantPanel(i18n.getString("UpdateDialogOptionsTitle"), getIgnoreDescPanel());
+        optionsView = new ElegantPanel(i18n.getString("RollbackDialogOptionsTitle"), getRollbackOptionsPanel());
         descView = new ElegantPanel(i18n.getString("RollbackDialogRollbackVersionTitle"), getPackageDescPanel());
-        packageView = new ElegantPanel(i18n.getString("UpdateDialogIgnorablePackagesTitle"), getPackageListPanel());
+        packageView = new ElegantPanel(i18n.getString("RollbackDialogRollbackablePackages"), getPackageListPanel());
     }
   
     private void initDockingPorts() {
@@ -385,7 +348,7 @@ public class RollbackPackageDialog extends JDialog {
         
         horizontalSplit = createSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         horizontalSplit.setRightComponent(verticalSplit);
-        horizontalSplit.setLeftComponent(ignoreView);
+        horizontalSplit.setLeftComponent(optionsView);
         
         postInit();
     }
@@ -393,7 +356,7 @@ public class RollbackPackageDialog extends JDialog {
     public void postInit() {
         
         verticalSplit.setDividerLocation(0.6d);
-        horizontalSplit.setDividerLocation(0.3d);
+        horizontalSplit.setDividerLocation(0.31d);
         
     }
 
@@ -442,7 +405,7 @@ public class RollbackPackageDialog extends JDialog {
 
                         int selectedRow = lsm.getMinSelectionIndex();
                         
-                        String currentPackage = (String) tblPackageList.getValueAt(selectedRow, (tblPackageList.getColumnModel().getColumn(1)).getModelIndex());
+                        String currentPackage = (String) tblPackageList.getValueAt(selectedRow, (tblPackageList.getColumnModel().getColumn(0)).getModelIndex());
                         updateDescriptionPanel(currentPackage);
                         
                     }
@@ -478,6 +441,7 @@ public class RollbackPackageDialog extends JDialog {
                     }
                 }
                 
+                // Use a list iterator so we can go in reverse.
                 for (ListIterator v = versions.listIterator(versions.size()-1); v.hasPrevious();) {
                     
                     model.addElement((String) v.previous());
