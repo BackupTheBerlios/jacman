@@ -5,13 +5,6 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.io.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: andyr
- * Date: May 23, 2005
- * Time: 9:48:57 AM
- * To change this template use File | Settings | File Templates.
- */
 public class PacmanPkg implements Comparable<PacmanPkg> {
 
     protected String name = "";
@@ -41,9 +34,6 @@ public class PacmanPkg implements Comparable<PacmanPkg> {
         if (pos != -1) {
             String header = infoBuffer.substring(0, pos+1);
             String info = infoBuffer.substring(pos+1);
-
-            //System.out.println(header);
-            //System.out.println(info);
 
             if (header.startsWith("%NAME%")) {
                 this.setName(info);
@@ -106,8 +96,6 @@ public class PacmanPkg implements Comparable<PacmanPkg> {
         }
         processInfoBuffer(infoBuffer);
         reader.close();
-
-
 
         // Parse the 'depends' file to obtain the packages that this package
         // depends on.
