@@ -12,7 +12,7 @@ import java.io.*;
  * Time: 9:48:57 AM
  * To change this template use File | Settings | File Templates.
  */
-public class PacmanPkg implements Comparable {
+public class PacmanPkg implements Comparable<PacmanPkg> {
 
     protected String name = "";
     protected String version = "";
@@ -21,7 +21,7 @@ public class PacmanPkg implements Comparable {
     protected String repository = "";
     protected String md5sum = "";
     protected long size = -1l;
-    protected List depends = new ArrayList();
+    protected List<String> depends = new ArrayList<String>();
     protected boolean installSelected = false;
 
     public PacmanPkg() {
@@ -204,11 +204,11 @@ public class PacmanPkg implements Comparable {
         this.repository = repository;
     }
 
-    public List getDepends() {
+    public List<String> getDepends() {
         return depends;
     }
 
-    public void setDepends(List depends) {
+    public void setDepends(List<String> depends) {
         this.depends = depends;
     }
 
@@ -237,9 +237,8 @@ public class PacmanPkg implements Comparable {
         return output.toString();
     }
 
-    public int compareTo(Object o) {
+    public int compareTo(PacmanPkg p) {
 
-        PacmanPkg p = (PacmanPkg)o;
 
         if (getName().equals(p.getName()) ) {
             return getVersion().compareTo(p.getVersion());
