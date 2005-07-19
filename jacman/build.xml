@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!-- ======================================================================                                                         
+
+     Ant build script for Jacman, the java gui frontend for pacman
+                            
+     ====================================================================== -->
+<project name="Jacman" basedir="." default="package">
+	<description>A java gui frontend for pacman</description>
+	<property file="build.properties" />
+	<property name="name" value="Jacman"/>
+	<property name="source.dir" location="src" />
+	<property name="build.dir" location="bin" />
+	<property name="jacman.jar" value="jacman-${jacman.version}.jar" />
+	<property name="jacman.manifest" location="${source.dir}/manifest.txt" />
+	<!-- =========  Targets  ================================= -->
+	<target name="usage">
+		<echo message="${name} build file" />
+		<echo message="" />
+		<echo message="run             => runs ${name}, after building and packaging it" />
+		<echo message="justrun         => just runs ${name} without rebuilding or packaging :: Dont use this target unless ${jacman.jar} exists" />
+		<echo message="package         => packages ${name} to ${jacman.jar}" />
+		<echo message="build           => compiles ${name}" />
+		<echo message="copy-resources  => copies resources from source to build folder" />
+		<echo message="usage           => prints this message" />
+	</target>
+	<target name="package" depends="build" description="packages Jacman to ${jacman.jar}">
+		<jar destfile="${jacman.jar}" manifest="${jacman.manifest}" basedir="${build.dir}" update="true">
+		</jar>
+	</target>
+	<target name="clean" description="cleans the build directory">
+		<delete>
+			<fileset dir="${build.dir}" />
+		</delete>
+	</target>
+	<target name="build" depends="copy-resources" description="compiles Jacman version ${jacman.version}">
+		<javac srcdir="${source.dir}" destdir="${build.dir}" classpathref="classpath" debug="on" />
+	</target>
+	<target name="copy-resources" depends="clean" description="copies resources from source to build directory">
+		<mkdir dir="${build.dir}" />
+		<copy todir="${build.dir}">
+			<fileset dir="${source.dir}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="justrun" description="runs Jacman without rebuilding and packaging">
+		<java jar="${jacman.jar}" fork="true">
+		</java>
+	</target>
+	<target name="run" depends="package, justrun" description="runs Jacman after rebuilding and packaging"/>
+	<!-- =============  Path  ====================================== -->
+	<path id="classpath">
+		<fileset dir="${jacman.libs}" includes="**/*.jar" />
+	</path>
+</project>
