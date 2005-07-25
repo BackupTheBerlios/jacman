@@ -78,7 +78,7 @@ public class Jacman {
     
     public static final String JACMAN_PROPERTIES_FILENAME = "jacman.properties";
     private final String JACMAN_NAME = "Jacman";
-    private final String JACMAN_VERSION_NUMBER = "0.2b";
+    private final String JACMAN_VERSION_NUMBER = "0.2";
     private final String JACMAN_DEV = "Andrew Roberts";
     private final String JACMAN_URL = "http://www.comp.leeds.ac.uk/andyr/";
     
