@@ -31,9 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
@@ -44,17 +42,12 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import org.apache.commons.collections.MultiHashMap;
 
-import com.l2fprod.common.model.DefaultBeanInfoResolver;
-import com.l2fprod.common.propertysheet.Property;
-import com.l2fprod.common.propertysheet.PropertySheet;
-import com.l2fprod.common.propertysheet.PropertySheetPanel;
-
 import andyr.jacman.InstallListFilter;
 import andyr.jacman.InstalledPacmanPkg;
 import andyr.jacman.Jacman;
 import andyr.jacman.PackageComparitor;
 import andyr.jacman.PackageNameComparitor;
-import andyr.jacman.RemoveOptions;
+import andyr.jacman.RollbackOptions;
 import andyr.jacman.SwingWorker;
 import andyr.jacman.console.ConsoleDialog;
 import andyr.jacman.utils.I18nManager;
@@ -67,6 +60,11 @@ import ca.odell.glazedlists.impl.beans.BeanTableFormat;
 import ca.odell.glazedlists.swing.EventTableModel;
 import ca.odell.glazedlists.swing.TableComparatorChooser;
 import ca.odell.glazedlists.swing.TextFilterList;
+
+import com.l2fprod.common.model.DefaultBeanInfoResolver;
+import com.l2fprod.common.propertysheet.Property;
+import com.l2fprod.common.propertysheet.PropertySheet;
+import com.l2fprod.common.propertysheet.PropertySheetPanel;
 
 public class RollbackPackageDialog extends JDialog {
 
@@ -95,7 +93,7 @@ public class RollbackPackageDialog extends JDialog {
     private PackageTableFormat tableFormat;
     
     // Rollback options are the same as the Remove options, so we will reuse.
-    private final RemoveOptions options = new RemoveOptions();
+    private final RollbackOptions options = new RollbackOptions();
     
     private I18nManager i18n;
     private PropertiesManager jacmanProperties;
@@ -126,8 +124,6 @@ public class RollbackPackageDialog extends JDialog {
                 i18n.getString("PackageTableColumnDescription"),
                 i18n.getString("PackageTableColumnSize") };
         
-        
-        //checkableTableFormat = new CheckableTableFormat(new BeanTableFormat(InstalledPacmanPkg.class, propertyNames, columnNames));
         tableFormat = new PackageTableFormat(new BeanTableFormat(InstalledPacmanPkg.class, propertyNames, columnNames));
         
         packagesTableModel = new EventTableModel(textFilteredIssues, tableFormat);
@@ -136,7 +132,6 @@ public class RollbackPackageDialog extends JDialog {
         
         setupGUI();
         
-        //final Component oldGlassPane = getGlassPane();
         final InfiniteProgressPanel pane = new InfiniteProgressPanel(i18n.getString("LoadingPackagesMessage"));
         setGlassPane(pane);
         validate();
@@ -150,8 +145,6 @@ public class RollbackPackageDialog extends JDialog {
             public void finished() {
                 JacmanUtils.setOptimalTableWidth(getPackageListTable());
                 pane.stop();
-                //setGlassPane(oldGlassPane);
-                //validate();
             }
         };
         worker.start();
@@ -282,22 +275,21 @@ public class RollbackPackageDialog extends JDialog {
         rollbackButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                
+                String packageName = (String)tblPackageList.getValueAt(tblPackageList.getSelectedRow(), 0);
                 List<String> commandArgs = new ArrayList<String>();
                 commandArgs.add("pacman");
-                commandArgs.addAll(options.getRemoveOptionsArgs());
-                commandArgs.add((String)cboRollbackVersion.getSelectedItem());
+                commandArgs.addAll(options.getRollbackOptionsArgs());
+                
+                commandArgs.add(Jacman.pacmanConf.getCachePath() + "/" + packageName + "-" + (String)cboRollbackVersion.getSelectedItem() + ".pkg.tar.gz");
                 
                 String[] command = new String[commandArgs.size()];
                 
                 for (int i = 0; i < commandArgs.size(); i++) {
                     command[i] = (String)commandArgs.get(i);
-                    //System.out.print(command[i] + " ");
                     
                 }
-                //System.out.println();
                 
-                new ConsoleDialog(command, (Dialog)SwingUtilities.getRoot(RollbackPackageDialog.this), i18n.getString("UpdateDialogConsoleTitle"), true);
+                new ConsoleDialog(command, (Dialog)SwingUtilities.getRoot(RollbackPackageDialog.this), i18n.getString("RollbackDialogConsoleTitle"), true);
                 returnVal = RollbackPackageDialog.PACMAN_RAN;
                 String dispose = jacmanProperties.getProperty("jacman.disposeMainMenu", "true");
                 if (dispose.equals("true") && returnVal == RollbackPackageDialog.PACMAN_RAN) {
@@ -306,6 +298,7 @@ public class RollbackPackageDialog extends JDialog {
                 else {
                     ((Frame)getParent()).setVisible(true);
                 }
+                
                 dispose();
             }
         
@@ -332,7 +325,7 @@ public class RollbackPackageDialog extends JDialog {
 
     }
     
-  private void createViews() {
+    private void createViews() {
        
         optionsView = new ElegantPanel(i18n.getString("RollbackDialogOptionsTitle"), getRollbackOptionsPanel());
         descView = new ElegantPanel(i18n.getString("RollbackDialogRollbackVersionTitle"), getPackageDescPanel());
