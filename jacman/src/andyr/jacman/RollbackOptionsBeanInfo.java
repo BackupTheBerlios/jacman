@@ -13,7 +13,7 @@ import com.l2fprod.common.beans.BaseBeanInfo;
 public class RollbackOptionsBeanInfo extends BaseBeanInfo {
 
     public RollbackOptionsBeanInfo() {
-        super(InstallOptions.class);
+        super(RollbackOptions.class);
         
         I18nManager i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
 
