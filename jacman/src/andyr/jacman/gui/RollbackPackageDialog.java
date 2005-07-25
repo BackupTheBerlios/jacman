@@ -271,7 +271,7 @@ public class RollbackPackageDialog extends JDialog {
         getContentPane().add(horizontalSplit, BorderLayout.CENTER);
         JPanel buttonPanel = new JPanel(new EqualsLayout(EqualsLayout.HORIZONTAL, EqualsLayout.RIGHT, 3));
         buttonPanel.setBorder(new EmptyBorder(3,3,3,3));
-        JButton rollbackButton = new JButton(i18n.getString("UpdateDialogUpdateButton"));
+        JButton rollbackButton = new JButton(i18n.getString("RollbackDialogRollbackButton"));
         rollbackButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
