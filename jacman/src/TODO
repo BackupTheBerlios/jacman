@@ -1,9 +1,32 @@
-* Options dialog
-* Dialog showing pacman.conf settings
-* Pacman defrag?
+Jacman TODO List
+================
+
+This file contains all the current ideas of features that will go into Jacman.
+The next version will contained quite detailed plans, whereas versions further
+away have more abstract concepts.
+
+Version 0.3
+===========
+
+* Use updated GlazedLists 0.9.7 to take advantage of speed improvements and bug fixes.
 * Use a better component for the console, such as JEditorPane to enable colour highlighting of output.
   E.g., red text for errors.
+* Options dialog.
+* Acquire package category data and implement filters based on them.
+* Add license info to all classes
+* Commence full JavaDoc for classes (maybe only andy.jacman and andyr.jacman.console for this version)
+* Add i18n support to exception messages.
+* Add option on main menu for Pacman optimise?
+* Fix the non-transparant JFrame icon.
+* Improve About dialog. Use proper JDialog rather than JOptionPane.
+* Remove dependency on Tahoma. Use Trebuchet which *is* part of ttf-ms-fonts, or an equivalent free font.
+
+Version 0.4
+===========
+
+* Add a srcpac interface? (Get Sudman1 on board?)
+* Dialog showing pacman.conf settings
+* Make Jacman more graceful when problems occur. For example, exit cleanly for invalid pacman.conf.
 * Think of nice way to present exceptions. Currently they are all outputed to stderr. Some need
   to be made visible.
-* Add i18n support to exception messages.
-* GPLify all classes
+
