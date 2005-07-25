@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import andyr.jacman.Jacman;
 import andyr.jacman.SwingWorker;
 import andyr.jacman.utils.I18nManager;
 
@@ -185,7 +186,7 @@ public class ConsoleDialog extends JDialog {
 			String stdoutput = "";
 
 			String lastName = "";
-			boolean iLovecandy = false;
+			boolean iLovecandy = Jacman.pacmanConf.getILoveCandy();
 			int nameColumnWidth = 20;
 			int percentColumnWidth = 4;
 			int sizeColumnWidth = 8;
@@ -334,7 +335,7 @@ public class ConsoleDialog extends JDialog {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			// System.err.println("Error running makepkg");
+			
 		}
 	}
 
