@@ -18,3 +18,4 @@ Version 0.2 (25-06-05)
  - Added acknowledgements to Jon-Anders (soniX) and added proper name for Sudman1.
  - Added i18n support for ConsoleDialog.
  - Added "rollback" package support.
+ - Console dialog supports ILoveCandy option.
