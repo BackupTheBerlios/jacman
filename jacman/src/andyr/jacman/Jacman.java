@@ -1,5 +1,21 @@
-package andyr.jacman;
+/*
+ * 
+ * Copyright 2005 Andrew Roberts
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
+package andyr.jacman;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -61,6 +77,12 @@ import com.jgoodies.plaf.HeaderStyle;
 import com.jgoodies.plaf.Options;
 import com.jgoodies.plaf.plastic.PlasticLookAndFeel;
 
+/**
+ * Main Jacman class that initiates the GUI and contains essential utility methods
+ * for obtaining all the pacman and package information for the entire program.
+ * 
+ * @author Andrew Roberts
+ */
 
 public class Jacman {
 
@@ -129,9 +151,10 @@ public class Jacman {
         List wantedRepos = pacmanConf.getRepositories();
 
         List<PacmanPkg> availablePackages = new ArrayList<PacmanPkg>();
-
+        
+        
         File[] repoDirs = dbPath.listFiles(directoryFilter);
-
+        
         for (int i = 0; i < repoDirs.length; i++) {
             if (wantedRepos.contains(repoDirs[i].getName())) {
                 File[] repoPackages = repoDirs[i].listFiles(directoryFilter);
@@ -268,19 +291,6 @@ public class Jacman {
         
     }
 
-    private JTabbedPane getJacmanTabs() {
-
-        if (jacmanTabs == null) {
-            jacmanTabs = new JTabbedPane();
-            jacmanTabs.add("Install", installListPanel);
-            jacmanTabs.add("Upgrade", new JPanel());
-            jacmanTabs.add("Remove", new JPanel());
-        }
-
-        return jacmanTabs;
-
-    }
-
     private JMenuBar getJacmanMenus() {
 
         if (jacmanMenuBar == null) {
@@ -300,7 +310,20 @@ public class Jacman {
             fileMenu.add(fileExitMenuItem);
 
             jacmanMenuBar.add(fileMenu);
-
+            
+            JMenu viewMenu = new JMenu(i18n.getString("JacmanFrameMenuView"));
+            JMenu viewLanguageMenu = new JMenu(i18n.getString("JacmanFrameMenuViewLanguage"));
+            viewLanguageMenu.setIcon(JacmanUtils.loadIcon("icons/languages.png"));
+            JMenuItem viewLanguageEnglishMenu = new JMenuItem(i18n.getString("JacmanFrameMenuViewLanguageEnglish"));
+            JMenuItem viewLanguageSpanishMenu = new JMenuItem(i18n.getString("JacmanFrameMenuViewLanguageSpanish"));
+            
+            viewLanguageMenu.add(viewLanguageEnglishMenu);
+            viewLanguageMenu.add(viewLanguageSpanishMenu);
+            
+            viewMenu.add(viewLanguageMenu);
+            
+            jacmanMenuBar.add(viewMenu);
+            
             JMenu helpMenu = new JMenu(i18n.getString("JacmanFrameMenuHelp"));
 
             JMenuItem helpAboutMenuItem = new JMenuItem(i18n.getString("JacmanFrameMenuHelpAbout"), JacmanUtils.loadIcon("icons/about.png"));
@@ -545,6 +568,7 @@ public class Jacman {
         
         acks.append("&nbsp;&nbsp;Jon-Anders Teigen (SoniX)" + "<br>");
         acks.append("&nbsp;&nbsp;James Sudbury (Sudman1)" + "<br>");
+        acks.append("&nbsp;&nbsp;Sud_crow" + "<br>");
         acks.append("&nbsp;&nbsp;Romain Guy" + "<br>");
         acks.append("&nbsp;&nbsp;Santhosh Kumar" + "<br>");
         acks.append("&nbsp;&nbsp;Dusty Phillips (Dusty)" + "<br>");
