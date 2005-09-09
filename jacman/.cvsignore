@@ -1,1 +1,2 @@
-jacman-0.1.jar
+jacman-*.jar
+*.class
