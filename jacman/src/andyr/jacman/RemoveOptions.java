@@ -74,7 +74,7 @@ public class RemoveOptions {
         }
         
         if (recursive) {
-            args.add("-f");
+            args.add("-s");
         }
         
         if (keep) {
