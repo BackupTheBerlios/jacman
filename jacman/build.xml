@@ -35,7 +35,7 @@
 	<target name="build" depends="copy-resources" description="compiles Jacman version ${jacman.version}">
 		<javac srcdir="${source.dir}" destdir="${build.dir}" classpathref="classpath" debug="on" />
 	</target>
-	<target name="copy-resources" depends="clean" description="copies resources from source to build directory">
+	<target name="copy-resources"  description="copies resources from source to build directory">
 		<mkdir dir="${build.dir}" />
 		<copy todir="${build.dir}">
 			<fileset dir="${source.dir}">
@@ -43,12 +43,13 @@
 			</fileset>
 		</copy>
 	</target>
-	<target name="justrun" description="runs Jacman without rebuilding and packaging">
+	<target name="run" depends="package">
 		<java jar="${jacman.jar}" fork="true">
+			<jvmarg value="-Djava.library.path=${jacman.libs}"/>
 		</java>
 	</target>
-	<target name="run" depends="package, justrun" description="runs Jacman after rebuilding and packaging"/>
-	<!-- =============  Path  ====================================== -->
+	<!-- <target name="run" depends="package, justrun" description="runs Jacman after rebuilding and packaging"/>
+	<!- =============  Path  ====================================== -->
 	<path id="classpath">
 		<fileset dir="${jacman.libs}" includes="**/*.jar" />
 	</path>
