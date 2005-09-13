@@ -68,6 +68,7 @@ import andyr.jacman.gui.MoveResizeGlassPane;
 import andyr.jacman.gui.RemovePackageDialog;
 import andyr.jacman.gui.RollbackPackageDialog;
 import andyr.jacman.gui.UpdatePackagesDialog;
+import andyr.jacman.gui.tray.Tray;
 import andyr.jacman.utils.I18nManager;
 import andyr.jacman.utils.JacmanUtils;
 import andyr.jacman.utils.PropertiesManager;
@@ -500,22 +501,16 @@ public class Jacman {
 
         jacmanFrame.setSize(800,600);
 
-        jacmanFrame.setVisible(true);
-        if (jacmanProperties.getProperty("jacman.showWindowInfo", "false").equals("true")) {
-            
+        jacmanFrame.setIconImage(JacmanUtils.loadIcon("icons/jacman_logo_small.png").getImage());
+        
+        if (jacmanProperties.getProperty("jacman.showWindowInfo", "false").equals("true"))    
             MoveResizeGlassPane.registerFrame(jacmanFrame);
-        }   
-
-        // Get default frame icon from UIManager and convert it to an image
-        Icon icon2=JacmanUtils.loadIcon("icons/jacman_logo_small.png");
-        Image img= jacmanFrame.createImage(icon2.getIconWidth(), icon2.getIconHeight());
-        Graphics g=img.getGraphics();
         
-        icon2.paintIcon(jacmanFrame, g, 0, 0);
-        g.dispose();
+        if (jacmanProperties.getProperty("jacman.startHiddenInTray", "false").equals("false"))
+        	jacmanFrame.setVisible(true);
         
-        jacmanFrame.setIconImage(img);
-
+        if (jacmanProperties.getProperty("jacman.enableTray", "true").equals("true"))
+        	new Tray(jacmanFrame);
     }
     
 
@@ -566,7 +561,7 @@ public class Jacman {
         
         StringBuilder acks = new StringBuilder("<html>" + i18n.getString("AboutDialogAcknowledgments") + ":<br>");
         
-        acks.append("&nbsp;&nbsp;Jon-Anders Teigen (SoniX)" + "<br>");
+        acks.append("&nbsp;&nbsp;Jon-Anders Teigen (soniX)" + "<br>");
         acks.append("&nbsp;&nbsp;James Sudbury (Sudman1)" + "<br>");
         acks.append("&nbsp;&nbsp;Sud_crow" + "<br>");
         acks.append("&nbsp;&nbsp;Romain Guy" + "<br>");
