@@ -176,7 +176,6 @@ public class ConsoleDialog extends JDialog {
 				StringBuilder escCode = new StringBuilder();
 				try {
 					while ((tmp = consoleBufferVO.getBufferedReader().read()) != -1) {
-						Thread.sleep(100);
 						if (27 == tmp)
 							escape = true;
 						if (escape)
