@@ -1,25 +1,27 @@
 package andyr.jacman.console;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import java.util.StringTokenizer;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
-import andyr.jacman.Jacman;
 import andyr.jacman.SwingWorker;
 import andyr.jacman.utils.I18nManager;
 
@@ -27,25 +29,24 @@ import andyr.jacman.utils.I18nManager;
  * Created on Jun 19, 2005
  *
  */
-
 public class ConsoleDialog extends JDialog {
 
 	private JPanel consolePanel;
 	private JPanel mainContent;
 	private JButton noButton;
 	private JButton yesButton;
-	private JTextArea outputArea;
+	private JTextPane console;
 	private JButton btnCloseDialog;
 	private ConsoleBufferVO consoleBufferVO;
-    
-    private I18nManager i18n;
+
+	private I18nManager i18n;
 
 	public ConsoleDialog(String[] command, Dialog owner, String title,
 			boolean modal) throws HeadlessException {
 		super(owner, title, modal);
-        
-        i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
 
+		i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale
+				.getDefault());
 		setupGUI();
 
 		final String cmd[] = command;
@@ -53,27 +54,23 @@ public class ConsoleDialog extends JDialog {
 			@Override
 			public Object construct() {
 				runCommand(cmd);
-				btnCloseDialog.setEnabled(true);
 				return "done";
 			}
 		};
 		worker.start();
 		setVisible(true);
-
 	}
 
 	public JPanel getConsolePanel() {
 
 		if (consolePanel == null) {
 			consolePanel = new JPanel(new BorderLayout());
-
-			outputArea = new JTextArea(20, 80);
-			outputArea.setText("");
-			// set monospaced font so prints doesnt get skewed
-			outputArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-			outputArea.setEditable(false);
-
-			consolePanel.add(new JScrollPane(outputArea));
+			console = new JTextPane();
+			console.setEditable(false);
+			console.setFont(new Font("Monospaced", Font.PLAIN, 10));
+			JScrollPane scroll = new JScrollPane(console);
+			scroll.setPreferredSize(new Dimension(500, 200));
+			consolePanel.add(scroll);
 		}
 
 		return consolePanel;
@@ -83,19 +80,17 @@ public class ConsoleDialog extends JDialog {
 
 		if (mainContent == null) {
 			mainContent = new JPanel(new BorderLayout());
-			mainContent.add(new JLabel(i18n.getString("ConsoleDialogLblOutput")), BorderLayout.NORTH);
+			mainContent.add(
+					new JLabel(i18n.getString("ConsoleDialogLblOutput")),
+					BorderLayout.NORTH);
 			mainContent.add(getConsolePanel(), BorderLayout.CENTER);
 
 			btnCloseDialog = new JButton(i18n.getString("ConsoleDialogBtnDone"));
 			btnCloseDialog.setEnabled(false);
 			btnCloseDialog.addActionListener(new ActionListener() {
-
 				public void actionPerformed(ActionEvent e) {
-
 					dispose();
-
 				}
-
 			});
 			initYesButton();
 			initNoButton();
@@ -104,7 +99,6 @@ public class ConsoleDialog extends JDialog {
 			buttonPanel.add(yesButton);
 			buttonPanel.add(noButton);
 			mainContent.add(buttonPanel, BorderLayout.SOUTH);
-
 		}
 		return mainContent;
 	}
@@ -123,16 +117,8 @@ public class ConsoleDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					consoleBufferVO.getBufferedWriter().write("Y"); // say yes
-																	// to
-																	// pacmans
-																	// question
 					consoleBufferVO.getBufferedWriter().write("\n");// hit enter
-																	// to send
-																	// the
-																	// answer
 					consoleBufferVO.getBufferedWriter().flush(); // flush,
-																	// just to
-																	// be sure
 				} catch (IOException ioe) {
 					ioe.printStackTrace();
 				}
@@ -153,15 +139,8 @@ public class ConsoleDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					consoleBufferVO.getBufferedWriter().write("n"); // say no to
-																	// pacmans
-																	// question
 					consoleBufferVO.getBufferedWriter().write("\n");// hit enter
-																	// to send
-																	// the
-																	// answer
 					consoleBufferVO.getBufferedWriter().flush(); // flush,
-																	// just to
-																	// be sure
 				} catch (IOException ioe) {
 					ioe.printStackTrace();
 				}
@@ -171,172 +150,104 @@ public class ConsoleDialog extends JDialog {
 	}
 
 	private void runCommand(String[] command) {
-		
-		outputArea.append("# ");
+		StringBuilder cmdString = new StringBuilder();
+		cmdString.append("# ");
+		for (String c : command)
+			cmdString.append(c);
+		cmdString.append('\n');
+		console.setText(cmdString.toString());
+		consoleBufferVO = Run.getConsoleBufferVO(command, null, null);
 
-		for (int i = 0; i < command.length; i++) {
-			outputArea.append(command[i] + " ");
-		}
-		outputArea.append("\n");
-
-		// Scroll along with the output
-		outputArea.setCaretPosition(outputArea.getText().length() - 1);
-		try {
-			consoleBufferVO = Run.getConsoleBufferVO(command, null, null);
-			String stdoutput = "";
-
-			String lastName = "";
-			boolean iLovecandy = Jacman.pacmanConf.getILoveCandy();
-			int nameColumnWidth = 20;
-			int percentColumnWidth = 4;
-			int sizeColumnWidth = 8;
-			int speedColumnWidth = 8;
-
-			while (stdoutput != null) {
-
-				String line = "  " + stdoutput + "\n";
-				StringTokenizer tok = new StringTokenizer(stdoutput);
-				int tokens = tok.countTokens();
-				// System.out.println(tokens);
-
-				// if there are 6 or 7 tokens, then its most likely a download
-				// we should track
-				// 6 tokens => ILoveCandy
-				// 7 tokens => default pacman output
-				if (tokens == 6 || tokens == 7) {
-					try {
-						// set iLoveCandy status on the first valid download run
-						// only
-						// REPLACE WITH PacmanConf property
-						if (lastName.equals(""))
-							iLovecandy = tokens == 6;
-
-						List<String> elements = new ArrayList<String>();
-						while (tok.hasMoreTokens()) {
-							String tmp = tok.nextToken();
-							// skip the progressbar
-							if (!tmp.startsWith("[") && !tmp.endsWith("]"))
-								elements.add(tmp);
+		new Thread() {
+			@Override
+			public void run() {
+				String yellowEscape = new String(new char[] { 27, '[', '1',
+						';', '3', '3', 'm' });
+				String whiteEscape = new String(new char[] { 27, '[', '0', ';',
+						'3', '7', 'm' });
+				String noEscape = new String(new char[] { 27, '[', 'm' });
+				boolean escape = false;
+				int tmp;
+				StyledDocument doc = console.getStyledDocument();
+				MutableAttributeSet keyword = new SimpleAttributeSet();
+				StyleConstants.setForeground(keyword, Color.BLACK);
+				int offset = doc.getLength();
+				int preOffset = offset;
+				StringBuilder escCode = new StringBuilder();
+				try {
+					while ((tmp = consoleBufferVO.getBufferedReader().read()) != -1) {
+						Thread.sleep(100);
+						if (27 == tmp)
+							escape = true;
+						if (escape)
+							escCode.append((char) tmp);
+						else {
+							if ('\n' == tmp) {
+								offset = doc.getLength();
+								preOffset = offset + 1;
+							}
+							if ('\r' == tmp)
+								offset = preOffset;
+							else {
+								if (offset < doc.getLength()) {
+									doc.remove(offset, 1);
+								}
+								doc.insertString(offset, "" + (char) tmp,
+										keyword);
+								offset++;
+								console.setCaretPosition(preOffset);
+							}
+							if (doc.toString().endsWith("[Y/n]"))
+								setYesNoEnabled(true);
 						}
-						// name of package/repo-list we are downloading
-						String name = elements.get(0);
-						for (int i = name.length(); i < nameColumnWidth; i++)
-							name += " ";
-
-						// percent downloaded
-						String percentBuf = elements.get(1);
-						int percent = Integer.parseInt(percentBuf.substring(0,
-								percentBuf.length() - 1));
-						String percentString = "";
-						for (int i = percentBuf.length(); i < percentColumnWidth; i++)
-							percentString += " ";
-						percentString += percentBuf;
-
-						// size downloaded
-						String kBuf = elements.get(2);
-						String k = "";
-						for (int i = kBuf.length(); i < sizeColumnWidth; i++)
-							k += " ";
-						k += kBuf;
-
-						// downloadspeed
-						String speedBuf = elements.get(3);
-						String speed = "";
-						for (int i = speedBuf.length(); i < speedColumnWidth; i++)
-							speed += " ";
-						speed += speedBuf;
-
-						// time
-						String time = elements.get(4);
-
-						
-						// ascii progressbar
-						String progress = "[";
-						int i;
-						for (i = 1; i < percent / 5; i++)
-							if (iLovecandy)
-								progress += "-";
-							else
-								progress += "#";
-						if (iLovecandy)
-							if (percent < 100)
-								if (i % 2 == 0)
-									progress += "C";
-								else
-									progress += "c";
-							else
-								progress += "-";
-						else
-							progress += "#";
-						for (int j = i; j < 20; j++)
-							if (iLovecandy)
-								progress += "*";
-							else
-								progress += " ";
-						progress += "]";
-
-						// the line we are going to append
-						line = name + "  " + progress + "  " + percentString
-								+ "  " + k + "  " + speed + "  " + time;
-
-						// remove last line in texarea if it has the same name
-						// as the current element
-						if (name.trim().equals(lastName.trim())) {
-							int index = outputArea.getText().lastIndexOf(
-									lastName.trim());
-							outputArea.setText(outputArea.getText().substring(
-									0, index));
+						if (escape) {
+							if ('m' == tmp) {
+								String esc = escCode.toString();
+								if (esc.equals(yellowEscape)) {
+									StyleConstants.setForeground(keyword,
+											Color.YELLOW);
+									escCode.delete(0, escCode.length());
+								} else if (esc.equals(whiteEscape)) {
+									StyleConstants.setForeground(keyword,
+											Color.GRAY);
+									escCode.delete(0, escCode.length());
+								} else if (esc.equals(noEscape)) {
+									StyleConstants.setForeground(keyword,
+											Color.BLACK);
+									escCode.delete(0, escCode.length());
+								}
+								escape = false;
+							}
 						}
-						// set current name to lastname for next roundtrip
-						lastName = name;
-					} catch (Exception e) {
-						// if something happens, fall back to normal printing
-						// for this element
-						//e.printStackTrace();
 					}
-				}// end if( tokens==6 || tokens==7 )
-
-				outputArea.append(line);
-				outputArea.setCaretPosition(outputArea.getText().length()
-						- line.length());
-
-				// READ CONFIRM OPTION!!!
-				stdoutput = "";
-				while (stdoutput != null) {
-					int tmp = consoleBufferVO.getBufferedReader().read();
-
-					if (tmp == '\n' || tmp == '\r') {
-						break;
-					}
-					if (tmp == -1) {
-						stdoutput = null;
-						break;
-					}
-
-					stdoutput += (char) tmp;
-					if (stdoutput.endsWith("[Y/n] ")) {
-						// show confirmdialog of some sort
-						outputArea.append(stdoutput); // output the confirm
-														// text to console
-						setYesNoEnabled(true);
-						stdoutput = ""; // clear stdotput as we have already
-										// shown it in console
-					}
-
+					consoleBufferVO.getBufferedReader().close();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
+				System.out.println("PACMAN STD_OUT DONE");
+				btnCloseDialog.setEnabled(true);
 			}
-			String stderr = "";
-			while (stderr != null) {
-				String line = "  " + stderr + "\n";
-				outputArea.append(line);
-				outputArea.setCaretPosition(outputArea.getText().length()
-						- line.length());
-				stderr = consoleBufferVO.getBufferedErrorReader().readLine();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			
-		}
-	}
+		}.start();
 
+		new Thread() {
+			@Override
+			public void run() {
+				StyledDocument doc = console.getStyledDocument();
+				MutableAttributeSet errorStdOut = new SimpleAttributeSet();
+				StyleConstants.setForeground(errorStdOut, Color.RED);
+				int tmp;
+				try {
+					while ((tmp = consoleBufferVO.getBufferedErrorReader()
+							.read()) != -1) {
+						doc.insertString(doc.getLength(), "" + (char) tmp,
+								errorStdOut);
+					}
+					consoleBufferVO.getBufferedErrorReader().close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				System.out.println("PACMAN ERR_OUT DONE");
+			}
+		}.start();
+	}
 }
