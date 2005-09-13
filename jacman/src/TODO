@@ -9,7 +9,7 @@ Version 0.3
 ===========
 
 * Use updated GlazedLists 0.9.7 to take advantage of speed improvements and bug fixes.
-* Use a better component for the console, such as JEditorPane to enable colour highlighting of output.
+* [DONE]Use a better component for the console, such as JEditorPane to enable colour highlighting of output.
   E.g., red text for errors.
 * Options dialog.
 * Acquire package category data and implement filters based on them.
@@ -21,6 +21,9 @@ Version 0.3
 * Improve About dialog. Use proper JDialog rather than JOptionPane.
 * Remove dependency on Tahoma. Use Trebuchet which *is* part of ttf-ms-fonts, or an equivalent free font.
 
+* [DONE]Add tray icon for jacman with standard tasks
+* Add time-triggered "silent" -Suy with notification in tray 
+
 Version 0.4
 ===========
 
@@ -29,4 +32,10 @@ Version 0.4
 * Make Jacman more graceful when problems occur. For example, exit cleanly for invalid pacman.conf.
 * Think of nice way to present exceptions. Currently they are all outputed to stderr. Some need
   to be made visible.
+  
+Down the road...
+================
+* Refactor Jacman to separate data, controller and view.
+* Change architecture to client/server, to allow a Jacman client to control several machines running Jacman servers.
+* Change Jacman-server to support other package managers ?
 
