@@ -196,7 +196,7 @@ public class ConsoleDialog extends JDialog {
 								offset++;
 								console.setCaretPosition(preOffset);
 							}
-							if (doc.toString().endsWith("[Y/n]"))
+							if (console.getText().endsWith("[Y/n]"))
 								setYesNoEnabled(true);
 						}
 						if (escape) {
