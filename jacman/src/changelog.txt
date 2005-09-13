@@ -19,3 +19,7 @@ Version 0.2 (25-06-05)
  - Added i18n support for ConsoleDialog.
  - Added "rollback" package support.
  - Console dialog supports ILoveCandy option.
+ 
+ Version 0.3 (pending)
+ - Console is improved. It now supports carriage return and ILoveCandy colour codes. Errors are printed in red.
+ - Added support for tray. Tray supports  
