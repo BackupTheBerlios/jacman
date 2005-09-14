@@ -112,8 +112,8 @@ public class Tray implements ActionListener {
 		menu.add(rollbackPackages);
 
 		// ABOUT
-		// TODO Refactor about dialog out from Jacman.java
-		menu.addSeparator();
+		// TODO Refactor about dialog out from Jacman.java so it can be reused in tray
+		//menu.addSeparator();
 		JMenuItem about = new JMenuItem();
 		about.setText(i18n.getString("JacmanFrameMenuHelpAbout"));
 		about.setIcon(JacmanUtils.loadIcon("icons/about.png"));
