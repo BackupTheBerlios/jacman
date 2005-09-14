@@ -153,7 +153,7 @@ public class ConsoleDialog extends JDialog {
 		StringBuilder cmdString = new StringBuilder();
 		cmdString.append("# ");
 		for (String c : command)
-			cmdString.append(c);
+			cmdString.append(" "+ c);
 		cmdString.append('\n');
 		console.setText(cmdString.toString());
 		consoleBufferVO = Run.getConsoleBufferVO(command, null, null);
@@ -196,8 +196,12 @@ public class ConsoleDialog extends JDialog {
 								offset++;
 								console.setCaretPosition(preOffset);
 							}
-							if (console.getText().endsWith("[Y/n]"))
+							if (console.getText().endsWith("[Y/n] ")){ // TODO [Y/n] is not pretty
 								setYesNoEnabled(true);
+								doc.insertString(offset,"\n",keyword);
+								offset++;
+								preOffset = offset;
+							}
 						}
 						if (escape) {
 							if ('m' == tmp) {
