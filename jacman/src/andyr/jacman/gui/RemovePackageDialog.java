@@ -1,3 +1,19 @@
+/*
+ * Copyright 2005 The Jacman Team
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package andyr.jacman.gui;
 
 import java.awt.BorderLayout;
@@ -69,7 +85,12 @@ import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
 
-
+/**
+ * A dialog for the removal of Pacman packages.
+ * 
+ * @author Andrew Roberts
+ *
+ */
 
 public class RemovePackageDialog extends JDialog {
 
@@ -90,13 +111,10 @@ public class RemovePackageDialog extends JDialog {
     
     private JLabel packageName = new JLabel();
     private JLabel packageDesc = new JLabel();
-    //private JLabel installDate = new JLabel();
     private JLabel installedVersion = new JLabel();
     private JLabel repository = new JLabel();
     private JLabel size = new JLabel();
     private JLabel md5sum = new JLabel();
-    //private JLabel packager = new JLabel();
-    //private JLabel licence = new JLabel();
     
     private EventList packageEventList = new BasicEventList();
     private SortedList sortedPackages;
@@ -141,7 +159,6 @@ public class RemovePackageDialog extends JDialog {
         
         setupGUI();
         
-        //final Component oldGlassPane = getGlassPane();
         final InfiniteProgressPanel pane = new InfiniteProgressPanel(i18n.getString("LoadingPackagesMessage"));
         setGlassPane(pane);
         validate();
@@ -155,14 +172,11 @@ public class RemovePackageDialog extends JDialog {
             public void finished() {
                 JacmanUtils.setOptimalTableWidth(getPackageListTable());
                 pane.stop();
-                //setGlassPane(oldGlassPane);
-                //validate();
             }
         };
         worker.start();
         
     }
-    
     
     private JPanel getRemoveOptionsPanel() {
         
