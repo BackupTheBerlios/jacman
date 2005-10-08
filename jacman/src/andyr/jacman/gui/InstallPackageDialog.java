@@ -1,3 +1,19 @@
+/*
+ * Copyright 2005 The Jacman Team
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package andyr.jacman.gui;
 
 import java.awt.BorderLayout;
@@ -67,6 +83,11 @@ import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
 
+/**
+ * Dialog for selecting packages to install.
+ * 
+ * @author Andrew Roberts
+ */
 
 public class InstallPackageDialog extends JDialog {
 
@@ -141,11 +162,11 @@ public class InstallPackageDialog extends JDialog {
         
         
         checkableTableFormat = new CheckableTableFormat(new BeanTableFormat(PacmanPkg.class, propertyNames, columnNames));
+        //checkableTableFormat = new PackageTableFormat(new BeanTableFormat(PacmanPkg.class, propertyNames, columnNames));
         packagesTableModel = new EventTableModel(textFilteredIssues, checkableTableFormat);
         
         setupGUI();
         
-        //final Component oldGlassPane = getGlassPane();
         final InfiniteProgressPanel pane = new InfiniteProgressPanel(i18n.getString("LoadingPackagesMessage"));
         setGlassPane(pane);
         validate();
@@ -155,15 +176,12 @@ public class InstallPackageDialog extends JDialog {
                 EventList installedPackages = new BasicEventList();
                 Jacman.findInstalledPackages(installedPackages);
                 Jacman.findAvailablePackages(packageEventList, installedPackages);
-                
                 return "done";
             }
             
             public void finished() {
                 JacmanUtils.setOptimalTableWidth(getPackageListTable());
                 pane.stop();
-                //setGlassPane(oldGlassPane);
-                //validate();
             }
         };
         worker.start();
@@ -209,8 +227,6 @@ public class InstallPackageDialog extends JDialog {
             gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.insets = new Insets(0, 3, 0, 0);
             gridBagConstraints.anchor = GridBagConstraints.WEST;
-            //gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
-            //gridBagConstraints.weightx = 1.0;
             pnlPackageDesc.add(packageName, gridBagConstraints);
 
             
@@ -245,8 +261,6 @@ public class InstallPackageDialog extends JDialog {
             gridBagConstraints.gridy = 2;
             gridBagConstraints.insets = new Insets(3, 3, 0, 0);
             gridBagConstraints.anchor = GridBagConstraints.WEST;
-            //gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
-            //gridBagConstraints.weightx = 1.0;
             pnlPackageDesc.add(availableVersion, gridBagConstraints);
 
             gridBagConstraints = new GridBagConstraints();
@@ -260,8 +274,6 @@ public class InstallPackageDialog extends JDialog {
             gridBagConstraints.gridx = 1;
             gridBagConstraints.gridy = 3;
             gridBagConstraints.insets = new Insets(3, 3, 0, 0);
-            //gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
-            //gridBagConstraints.weightx = 1.0;
             gridBagConstraints.anchor = GridBagConstraints.WEST;
             pnlPackageDesc.add(installedVersion, gridBagConstraints);
             
@@ -276,8 +288,6 @@ public class InstallPackageDialog extends JDialog {
             gridBagConstraints.gridx = 1;
             gridBagConstraints.gridy = 4;
             gridBagConstraints.insets = new Insets(3, 3, 0, 0);
-            //gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
-            //gridBagConstraints.weightx = 1.0;
             gridBagConstraints.anchor = GridBagConstraints.WEST;
             pnlPackageDesc.add(size, gridBagConstraints);
             
@@ -292,8 +302,6 @@ public class InstallPackageDialog extends JDialog {
             gridBagConstraints.gridx = 1;
             gridBagConstraints.gridy = 5;
             gridBagConstraints.insets = new Insets(3, 3, 0, 0);
-            //gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
-            //gridBagConstraints.weightx = 1.0;
             gridBagConstraints.anchor = GridBagConstraints.WEST;
             pnlPackageDesc.add(repository, gridBagConstraints);
             
@@ -308,8 +316,6 @@ public class InstallPackageDialog extends JDialog {
             gridBagConstraints.gridx = 1;
             gridBagConstraints.gridy = 6;
             gridBagConstraints.insets = new Insets(3, 3, 0, 0);
-            //gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
-            //gridBagConstraints.weightx = 1.0;
             gridBagConstraints.anchor = GridBagConstraints.WEST;
             pnlPackageDesc.add(md5sum, gridBagConstraints);
             
@@ -324,8 +330,6 @@ public class InstallPackageDialog extends JDialog {
             gridBagConstraints.gridx = 1;
             gridBagConstraints.gridy = 7;
             gridBagConstraints.insets = new Insets(3, 3, 0, 0);
-            //gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
-            //gridBagConstraints.weightx = 1.0;
             gridBagConstraints.anchor = GridBagConstraints.WEST;
             pnlPackageDesc.add(getDependsTree(), gridBagConstraints);
             
@@ -465,7 +469,6 @@ public class InstallPackageDialog extends JDialog {
         installButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                //String[] command = {"ls", "-l", "/dev"};
                 
                 List commandArgs = new ArrayList();
                 commandArgs.add("pacman");
@@ -473,6 +476,7 @@ public class InstallPackageDialog extends JDialog {
                 commandArgs.addAll(options.getInstallOptionsArgs());
                 
                 List selectedPackages = checkableTableFormat.getSelection();
+                
                 for (Iterator p = selectedPackages.iterator(); p.hasNext();) {
                     commandArgs.add(((PacmanPkg)p.next()).getName());
                 }
@@ -481,10 +485,8 @@ public class InstallPackageDialog extends JDialog {
                 
                 for (int i = 0; i < commandArgs.size(); i++) {
                     command[i] = (String)commandArgs.get(i);
-                    //System.out.print(command[i] + " ");
                     
                 }
-                //System.out.println();
                 
                 new ConsoleDialog(command, (Dialog)SwingUtilities.getRoot(InstallPackageDialog.this), i18n.getString("InstallDialogConsoleTitle"), true);
                 returnVal = InstallPackageDialog.PACMAN_RAN;
@@ -560,21 +562,20 @@ public class InstallPackageDialog extends JDialog {
         
     }
 
-
     private static JSplitPane createSplitPane(int orientation) {
         JSplitPane split = new JSplitPane(orientation);
-        // remove the border from the split pane
+        // Remove the border from the split pane
         split.setBorder(null);
          
-        // set the divider size for a more reasonable, less bulky look 
+        // Set the divider size for a more reasonable, less bulky look 
         split.setDividerSize(3);
 
-        // check the UI.  If we can't work with the UI any further, then
+        // Check the UI. If we can't work with the UI any further, then
         // exit here.
         if (!(split.getUI() instanceof BasicSplitPaneUI))
            return split;
 
-        //  grab the divider from the UI and remove the border from it
+        // Grab the divider from the UI and remove the border from it
         BasicSplitPaneDivider divider =
                        ((BasicSplitPaneUI) split.getUI()).getDivider();
         if (divider != null)
@@ -598,7 +599,7 @@ public class InstallPackageDialog extends JDialog {
 
                 public void valueChanged(ListSelectionEvent e) {
 
-                    //Ignore extra messages.
+                    // Ignore extra messages.
                     if (e.getValueIsAdjusting()) return;
 
                     ListSelectionModel lsm = (ListSelectionModel)e.getSource();
