@@ -18,8 +18,20 @@ Version 0.2 (25-06-05)
  - Added acknowledgements to Jon-Anders (soniX) and added proper name for Sudman1.
  - Added i18n support for ConsoleDialog.
  - Added "rollback" package support.
+
+ - Console dialog supports ILoveCandy option.
+ 
+ Version 0.3
+  - Added multi-lingual support that enables the user to switch the language used in the
+    Jacman GUI. Various languages such as Chinese, Spanish, Swedish and Polish are included.
+  - Added a Preferences dialog box to allow user-specific settings. This avoids manual editing
+    of Jacman.properties file.
+  - Added button on main menu to initiate the Pacman-Optimize functionality.
+  - Added acknowledgements to all translation contributors.
+  - All source files now has the license information in its preamble.
+  - Updated the l2fprod-common-sheet.jar to its latest version.=======
  - Console dialog supports ILoveCandy option.
  
  Version 0.3 (pending)
  - Console is improved. It now supports carriage return and ILoveCandy colour codes. Errors are printed in red.
- - Added support for tray. Tray supports  
+ - Added support for tray. Tray supports  >>>>>>> 1.6
