@@ -1,6 +1,6 @@
 /*
  * 
- * Copyright 2005 Andrew Roberts
+ * Copyright 2005 The Jacman Team
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,7 +20,6 @@ package andyr.jacman;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
@@ -64,10 +63,12 @@ import andyr.jacman.gui.Cartouche;
 import andyr.jacman.gui.FooterPanel;
 import andyr.jacman.gui.HeaderPanel;
 import andyr.jacman.gui.InstallPackageDialog;
+import andyr.jacman.gui.LocaleChanger;
 import andyr.jacman.gui.MoveResizeGlassPane;
 import andyr.jacman.gui.RemovePackageDialog;
 import andyr.jacman.gui.RollbackPackageDialog;
 import andyr.jacman.gui.UpdatePackagesDialog;
+import andyr.jacman.prefs.PreferencesDialog;
 import andyr.jacman.gui.tray.Tray;
 import andyr.jacman.utils.I18nManager;
 import andyr.jacman.utils.JacmanUtils;
@@ -90,18 +91,15 @@ public class Jacman {
     public static PacmanConf pacmanConf;
     
     private JFrame jacmanFrame;
-    private JTabbedPane jacmanTabs;
     private JMenuBar jacmanMenuBar;
     private JPanel mainContent;
-    private InstallPackageDialog installListPanel;
     
-    //private Properties jacmanProperties;
     private I18nManager i18n;
     private PropertiesManager jacmanProperties;
     
     public static final String JACMAN_PROPERTIES_FILENAME = "jacman.properties";
     private final String JACMAN_NAME = "Jacman";
-    private final String JACMAN_VERSION_NUMBER = "0.2";
+    private final String JACMAN_VERSION_NUMBER = "0.3";
     private final String JACMAN_DEV = "Andrew Roberts";
     private final String JACMAN_URL = "http://www.comp.leeds.ac.uk/andyr/";
     
@@ -152,7 +150,6 @@ public class Jacman {
         List wantedRepos = pacmanConf.getRepositories();
 
         List<PacmanPkg> availablePackages = new ArrayList<PacmanPkg>();
-        
         
         File[] repoDirs = dbPath.listFiles(directoryFilter);
         
@@ -292,13 +289,25 @@ public class Jacman {
         
     }
 
-    private JMenuBar getJacmanMenus() {
+    public JMenuBar getJacmanMenus() {
 
         if (jacmanMenuBar == null) {
 
             jacmanMenuBar = new JMenuBar();
 
             JMenu fileMenu = new JMenu(i18n.getString("JacmanFrameMenuFile"));
+            
+            JMenuItem filePrefsMenuItem = new JMenuItem(i18n.getString("JacmanFrameMenuFilePrefs"));
+            filePrefsMenuItem.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    new PreferencesDialog(jacmanFrame, i18n.getString("PrefsDialogTitle"), true);
+                    
+                }
+                
+            });
+            
+            fileMenu.add(filePrefsMenuItem);
 
             JMenuItem fileExitMenuItem = new JMenuItem(i18n.getString("JacmanFrameMenuFileQuit"), JacmanUtils.loadIcon("icons/exit.png"));
             fileExitMenuItem.addActionListener(new ActionListener() {
@@ -321,9 +330,10 @@ public class Jacman {
             viewLanguageMenu.add(viewLanguageEnglishMenu);
             viewLanguageMenu.add(viewLanguageSpanishMenu);
             
-            viewMenu.add(viewLanguageMenu);
+            viewMenu.add(new LocaleChanger(getFrame()));
             
             jacmanMenuBar.add(viewMenu);
+            
             
             JMenu helpMenu = new JMenu(i18n.getString("JacmanFrameMenuHelp"));
 
@@ -487,7 +497,7 @@ public class Jacman {
         return mainContent;
     }
         
-    public void createAndShowGUI() {
+    public void createGUI() {
 
         configureJGoodiesLAF();
         
@@ -501,11 +511,28 @@ public class Jacman {
 
         jacmanFrame.setSize(800,600);
 
+        //jacmanFrame.setVisible(true);
+        if (jacmanProperties.getProperty("jacman.showWindowInfo", "false").equals("true")) {
+            
         jacmanFrame.setIconImage(JacmanUtils.loadIcon("icons/jacman_logo_small.png").getImage());
         
         if (jacmanProperties.getProperty("jacman.showWindowInfo", "false").equals("true"))    
+
             MoveResizeGlassPane.registerFrame(jacmanFrame);
+
+        }   
+        if (jacmanProperties.getProperty("jacman.startHiddenInTray", "false").equals("false"))
+        	jacmanFrame.setVisible(true);
         
+        if (jacmanProperties.getProperty("jacman.enableTray", "true").equals("true"))
+        	new Tray(jacmanFrame);
+
+        // Get default frame icon from UIManager and convert it to an image
+        //Icon icon2=JacmanUtils.loadIcon("icons/jacman_logo_small.png");
+        //Image img= jacmanFrame.createImage(icon2.getIconWidth(), icon2.getIconHeight());
+        //Graphics g=img.getGraphics();
+        //icon2.paintIcon(jacmanFrame, g, 0, 0);
+        //g.dispose();
         if (jacmanProperties.getProperty("jacman.startHiddenInTray", "false").equals("false"))
         	jacmanFrame.setVisible(true);
         
@@ -543,7 +570,7 @@ public class Jacman {
         try {
             UIManager.setLookAndFeel(selectedLaf);
         } catch (Exception e) {
-            System.out.println("Could not change the look and feel: " + e);
+            System.err.println("Could not change the look and feel: " + e);
         }
     }
     
@@ -559,19 +586,31 @@ public class Jacman {
         
         aboutPanel.add(header, BorderLayout.NORTH);
         
-        StringBuilder acks = new StringBuilder("<html>" + i18n.getString("AboutDialogAcknowledgments") + ":<br>");
+        StringBuilder acks = new StringBuilder("<html>" + i18n.getString("AboutDialogAcknowledgments") + "<br>");
         
         acks.append("&nbsp;&nbsp;Jon-Anders Teigen (soniX)" + "<br>");
         acks.append("&nbsp;&nbsp;James Sudbury (Sudman1)" + "<br>");
-        acks.append("&nbsp;&nbsp;Sud_crow" + "<br>");
         acks.append("&nbsp;&nbsp;Romain Guy" + "<br>");
         acks.append("&nbsp;&nbsp;Santhosh Kumar" + "<br>");
         acks.append("&nbsp;&nbsp;Dusty Phillips (Dusty)" + "<br>");
-        acks.append("&nbsp;&nbsp;John Lipsky");
+        acks.append("&nbsp;&nbsp;John Lipsky" + "<br>");
+        acks.append("<br>" + i18n.getString("AboutDialogTranslations") + "<br>");
+        acks.append("&nbsp;&nbsp;" + i18n.getString("LanguageSpanish") + ": Leonardo Gallego (Sud_crow)" + "<br>");
+        acks.append("&nbsp;&nbsp;" + i18n.getString("LanguagePolish") + ": Piotr Mali\u0144ski (Riklaunim)" + "<br>");
+        acks.append("&nbsp;&nbsp;" + i18n.getString("LanguageSwedish") + ": Jens Persson (Xerces2)" + "<br>");
+        acks.append("&nbsp;&nbsp;" + i18n.getString("LanguageGreek") + ": Stavros Griannouris (Stavrosg)" + "<br>");
         acks.append("</html>");
         
         aboutPanel.add(new JLabel(acks.toString()), BorderLayout.CENTER);
         return aboutPanel;
+    }
+    
+    public JFrame getFrame() {
+        return jacmanFrame;
+    }
+    
+    public void setVisible(boolean visible) {
+        jacmanFrame.setVisible(visible);
     }
 
     public static void main(final String[] args) {
@@ -650,7 +689,8 @@ public class Jacman {
                     jm = new Jacman(conf);
                 }
 
-                jm.createAndShowGUI();
+                jm.createGUI();
+                jm.setVisible(true);
             }
         });
 
