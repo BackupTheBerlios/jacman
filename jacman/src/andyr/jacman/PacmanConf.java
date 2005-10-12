@@ -15,8 +15,8 @@ import java.util.StringTokenizer;
 public class PacmanConf {
 
     private File confPath;
-    private List repositories = new ArrayList();
-    private List ignorePackages = new ArrayList();
+    private List<String> repositories = new ArrayList<String>();
+    private List<String> ignorePackages = new ArrayList<String>();
     private File dbPath = new File("/var/lib/pacman");
     private File cachePath = new File("/var/cache/pacman/pkg");
     private Boolean iLoveCandy = false;
@@ -28,12 +28,12 @@ public class PacmanConf {
     public PacmanConf(File confPath) throws FileNotFoundException, IOException {
 
         this.confPath = confPath;
-        parseConf(confPath);
+        parseConf();
 
 
     }
 
-    private void parseConf(File confPath) throws FileNotFoundException, IOException {
+    private void parseConf() throws FileNotFoundException, IOException {
 
         BufferedReader reader = new BufferedReader(new FileReader(confPath));
 
@@ -116,6 +116,7 @@ public class PacmanConf {
         return confPath;
     }
 
+    @Override
     public String toString() {
         StringBuilder output = new StringBuilder();
         output.append("pacman.conf path: " + getConfPath().getPath() + '\n');
@@ -123,13 +124,13 @@ public class PacmanConf {
 
         output.append("Repositories: ");
         for (int i = 0; i < repositories.size(); i++) {
-            output.append((String) repositories.get(i) + " ");
+            output.append(repositories.get(i) + " ");
         }
         output.append("\n");
 
         output.append("IgnorePkgs: ");
         for (int i = 0; i < ignorePackages.size(); i++) {
-            output.append((String) ignorePackages.get(i) + " ");
+            output.append(ignorePackages.get(i) + " ");
         }
         output.append("\n");
 
