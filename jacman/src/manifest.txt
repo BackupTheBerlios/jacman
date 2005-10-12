@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
 Main-Class: andyr.jacman.Jacman
-Class-Path: lib/glazedlists-0.9.6.jar lib/l2fprod-common-sheet.jar lib/looks-1.2.2.jar lib/jdic.jar
+Class-Path: lib/glazedlists-0.9.6.jar lib/l2fprod-common-sheet.jar lib/looks-1.2.2.jar lib/jdic.jar lib/l2fprod-common-buttonbar.jar
