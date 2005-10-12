@@ -21,8 +21,8 @@ Version 0.3
 * Improve About dialog. Use proper JDialog rather than JOptionPane.
 * Remove dependency on Tahoma. Use Trebuchet which *is* part of ttf-ms-fonts, or an equivalent free font.
 
-* [DONE]Add tray icon for jacman with standard tasks
-* Add time-triggered "silent" -Suy with notification in tray 
+* Add tray icon for jacman with standard tasks
+* Add time-triggered "silent" -Suy with notification in tray (I might wait with this feature until jacmans architecture improves)
 
 Version 0.4
 ===========
