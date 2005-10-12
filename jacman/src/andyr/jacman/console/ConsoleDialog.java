@@ -38,8 +38,9 @@ public class ConsoleDialog extends JDialog {
 	private JTextPane console;
 	private JButton btnCloseDialog;
 	private ConsoleBufferVO consoleBufferVO;
-
 	private I18nManager i18n;
+
+	// TODO Make code reusable and pretty
 
 	public ConsoleDialog(String[] command, Dialog owner, String title,
 			boolean modal) throws HeadlessException {
@@ -153,7 +154,7 @@ public class ConsoleDialog extends JDialog {
 		StringBuilder cmdString = new StringBuilder();
 		cmdString.append("# ");
 		for (String c : command)
-			cmdString.append(" "+ c);
+			cmdString.append(" " + c);
 		cmdString.append('\n');
 		console.setText(cmdString.toString());
 		consoleBufferVO = Run.getConsoleBufferVO(command, null, null);
@@ -196,9 +197,9 @@ public class ConsoleDialog extends JDialog {
 								offset++;
 								console.setCaretPosition(preOffset);
 							}
-							if (console.getText().endsWith("[Y/n] ")){ // TODO [Y/n] is not pretty
+							if (console.getText().endsWith("[Y/n] ")) {
 								setYesNoEnabled(true);
-								doc.insertString(offset,"\n",keyword);
+								doc.insertString(offset, "\n", keyword);
 								offset++;
 								preOffset = offset;
 							}
