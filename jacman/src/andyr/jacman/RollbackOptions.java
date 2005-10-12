@@ -31,7 +31,7 @@ public class RollbackOptions {
     
     public List<String> getRollbackOptionsArgs() {
         List<String> args = new ArrayList<String>();
-        args.add("-S");
+        args.add("-U");
         
         if (nodeps) {
             args.add("-d");
