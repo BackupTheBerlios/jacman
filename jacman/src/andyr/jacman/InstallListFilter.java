@@ -52,7 +52,7 @@ public class InstallListFilter extends AbstractFilterList implements ListSelecti
 
         i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
         
-        List filterItems = new ArrayList();
+        List<String> filterItems = new ArrayList<String>();
         filterItems.add(i18n.getString("FilterAll"));
         filterItems.add(i18n.getString("FilterNotInstalled"));
         
@@ -91,6 +91,7 @@ public class InstallListFilter extends AbstractFilterList implements ListSelecti
      * Test whether to include or not include the specified issue based
      * on whether or not their user is selected.
      */
+    @Override
     public boolean filterMatches(Object o) {
         if (o == null) return false;
         if (packagesSelectedList.isEmpty()) return true;
