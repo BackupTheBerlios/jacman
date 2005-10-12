@@ -92,6 +92,7 @@ public class InstalledPacmanPkg extends PacmanPkg {
         this.arch = arch;
     }
 
+    @Override
     protected void processInfoBuffer(String infoBuffer) {
 
         int pos = infoBuffer.lastIndexOf('%');
@@ -148,6 +149,7 @@ public class InstalledPacmanPkg extends PacmanPkg {
 
     }
 
+    @Override
     public String toString() {
 
         StringBuilder output = new StringBuilder();
@@ -168,7 +170,7 @@ public class InstalledPacmanPkg extends PacmanPkg {
         output.append("Package depends on: ");
 
         for (int i = 0; i < depends.size(); i++) {
-            output.append((String) depends.get(i) + " ");
+            output.append(depends.get(i) + " ");
 
         }
         output.append('\n');
