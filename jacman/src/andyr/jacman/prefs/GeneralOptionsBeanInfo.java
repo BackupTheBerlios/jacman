@@ -34,7 +34,12 @@ public class GeneralOptionsBeanInfo extends BaseBeanInfo {
         super(GeneralOptions.class);
         I18nManager i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
         
-        addProperty("disposeMainMenu").setDisplayName(i18n.getString("GeneralOptionsDisposeMainMenu"));
+        addProperty("disposeMainMenu").setCategory("Behaviour").setDisplayName(i18n.getString("GeneralOptionsDisposeMainMenu"));
+        
+        // System tray properties
+        addProperty("enableSystemTray").setCategory("System tray").setDisplayName(i18n.getString("GeneralOptionsEnableTray"));
+        addProperty("startHiddenInTray").setCategory("System tray").setDisplayName(i18n.getString("GeneralOptionsStartInTray"));
+        
         
     }
     

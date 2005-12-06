@@ -16,13 +16,22 @@
 
 package andyr.jacman.prefs;
 
+import java.util.Properties;
+
 public class GeneralOptions {
     
-    public GeneralOptions() {
+    private boolean disposeMainMenu = false;
+    private boolean enableSystemTray = false;
+    private boolean startHiddenInTray = false;
+    
+    public GeneralOptions(Properties properties) {
         super();
+        setDisposeMainMenu(new Boolean(properties.getProperty("jacman.disposeMainMenu")).booleanValue());
+        setEnableSystemTray(new Boolean(properties.getProperty("jacman.enableTray")).booleanValue());
+        setStartHiddenInTray(new Boolean(properties.getProperty("jacman.startHiddenInTray")).booleanValue());
     }
 
-    private boolean disposeMainMenu = false;
+    
 
     /**
      * @return Returns the disposeMainMenu.
@@ -36,6 +45,34 @@ public class GeneralOptions {
      */
     public void setDisposeMainMenu(boolean disposeMainMenu) {
         this.disposeMainMenu = disposeMainMenu;
+    }
+
+    /**
+     * @return Returns the enableSystemTray.
+     */
+    public boolean isEnableSystemTray() {
+        return enableSystemTray;
+    }
+
+    /**
+     * @param enableSystemTray The enableSystemTray to set.
+     */
+    public void setEnableSystemTray(boolean enableSystemTray) {
+        this.enableSystemTray = enableSystemTray;
+    }
+
+    /**
+     * @return Returns the startHiddenInTray.
+     */
+    public boolean isStartHiddenInTray() {
+        return startHiddenInTray;
+    }
+
+    /**
+     * @param startHiddenInTray The startHiddenInTray to set.
+     */
+    public void setStartHiddenInTray(boolean startHiddenInTray) {
+        this.startHiddenInTray = startHiddenInTray;
     }
     
 }

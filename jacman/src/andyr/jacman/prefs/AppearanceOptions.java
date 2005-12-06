@@ -16,6 +16,8 @@
 
 package andyr.jacman.prefs;
 
+import java.util.Properties;
+
 public class AppearanceOptions {
     private boolean useAntiAliasText = true;
     private boolean showWindowInfo = false;
@@ -23,8 +25,10 @@ public class AppearanceOptions {
      * @return Returns the showWindowInfo.
      */
     
-    public AppearanceOptions() {
+    public AppearanceOptions(Properties properties) {
         super();
+        setShowWindowInfo(new Boolean(properties.getProperty("jacman.showWindowInfo")).booleanValue());
+        setUseAntiAliasText(new Boolean(properties.getProperty("jacman.useAntiAliasText")).booleanValue());
     }
     public boolean isShowWindowInfo() {
         return showWindowInfo;
