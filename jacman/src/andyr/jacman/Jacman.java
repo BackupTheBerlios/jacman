@@ -507,22 +507,19 @@ public class Jacman {
         jacmanFrame.getContentPane().add(getMainContent());
 
         jacmanFrame.setSize(800,600);
-
-        //jacmanFrame.setVisible(true);
-        if (jacmanProperties.getProperty("jacman.showWindowInfo", "false").equals("true")) {
-            
         jacmanFrame.setIconImage(JacmanUtils.loadIcon("icons/jacman_logo_small.png").getImage());
         
-        if (jacmanProperties.getProperty("jacman.showWindowInfo", "false").equals("true"))    
-
+        
+        if (jacmanProperties.getProperty("jacman.showWindowInfo", "false").equals("true")) {    
             MoveResizeGlassPane.registerFrame(jacmanFrame);
-
         }   
+        
         if (jacmanProperties.getProperty("jacman.startHiddenInTray", "false").equals("false"))
         	jacmanFrame.setVisible(true);
         
-        if (jacmanProperties.getProperty("jacman.enableTray", "true").equals("true"))
+        if (jacmanProperties.getProperty("jacman.enableTray", "true").equals("true")) {
         	new Tray(jacmanFrame);
+        }
 
         // Get default frame icon from UIManager and convert it to an image
         //Icon icon2=JacmanUtils.loadIcon("icons/jacman_logo_small.png");
@@ -530,11 +527,7 @@ public class Jacman {
         //Graphics g=img.getGraphics();
         //icon2.paintIcon(jacmanFrame, g, 0, 0);
         //g.dispose();
-        if (jacmanProperties.getProperty("jacman.startHiddenInTray", "false").equals("false"))
-        	jacmanFrame.setVisible(true);
         
-        if (jacmanProperties.getProperty("jacman.enableTray", "true").equals("true"))
-        	new Tray(jacmanFrame);
     }
     
 
