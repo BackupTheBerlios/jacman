@@ -71,6 +71,7 @@ public class PreferencesDialog extends JDialog {
     private JButtonBar getButtonBar() {
         if (toolbar == null) {
             toolbar = new JButtonBar(JButtonBar.VERTICAL);
+            
             toolbar.setUI(new BlueishButtonBarUI());
             ButtonGroup group = new ButtonGroup();
             
