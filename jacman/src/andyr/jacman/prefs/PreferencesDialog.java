@@ -24,6 +24,9 @@ import java.awt.event.ActionListener;
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URLClassLoader;
 import java.util.Locale;
 
 import javax.swing.AbstractAction;
@@ -38,9 +41,11 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
 
+import andyr.jacman.Jacman;
 import andyr.jacman.gui.EqualsLayout;
 import andyr.jacman.utils.I18nManager;
 import andyr.jacman.utils.JacmanUtils;
+import andyr.jacman.utils.PropertiesManager;
 
 import com.l2fprod.common.model.DefaultBeanInfoResolver;
 import com.l2fprod.common.propertysheet.Property;
@@ -61,11 +66,30 @@ public class PreferencesDialog extends JDialog {
     private JPanel content;
     private Component currentComponent;
     private I18nManager i18n;
+    private PropertiesManager jacmanProperties;
     
     public PreferencesDialog(JFrame frame, String title, boolean modal) {
         super(frame, title, modal);
-        i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
+        //i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
+        
+        try {
+            loadProperties();
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        
         setupGUI();
+    }
+    
+    private void loadProperties() throws FileNotFoundException, IOException {
+        
+        i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
+        jacmanProperties = PropertiesManager.getPropertiesManager(URLClassLoader.getSystemResourceAsStream(Jacman.JACMAN_PROPERTIES_FILENAME)); 
+        
     }
 
     private JButtonBar getButtonBar() {
@@ -75,8 +99,8 @@ public class PreferencesDialog extends JDialog {
             toolbar.setUI(new BlueishButtonBarUI());
             ButtonGroup group = new ButtonGroup();
             
-            addButton(i18n.getString("PrefsDialogGeneralOptions"), "icons/jacman_logo_32x32.png", new PrefsPanel(i18n.getString("PrefsDialogGeneralOptions"), new GeneralOptions()), toolbar, group);
-            addButton(i18n.getString("PrefsDialogAppearanceOptions"), "icons/jacman_logo_32x32.png", new PrefsPanel(i18n.getString("PrefsDialogAppearanceOptions"), new AppearanceOptions()), toolbar, group);
+            addButton(i18n.getString("PrefsDialogGeneralOptions"), "icons/jacman_logo_32x32.png", new PrefsPanel(i18n.getString("PrefsDialogGeneralOptions"), new GeneralOptions(jacmanProperties.getProperties())), toolbar, group);
+            addButton(i18n.getString("PrefsDialogAppearanceOptions"), "icons/jacman_logo_32x32.png", new PrefsPanel(i18n.getString("PrefsDialogAppearanceOptions"), new AppearanceOptions(jacmanProperties.getProperties())), toolbar, group);
             //addButton("Misc", "icons/jacman_logo_32x32.png", makePanel("Misc"), toolbar, group);
         }
         
@@ -130,6 +154,7 @@ public class PreferencesDialog extends JDialog {
         panel.add(top, BorderLayout.NORTH);
         panel.setPreferredSize(new Dimension(400, 300));
         panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        
         return panel;
     }
 
@@ -214,7 +239,7 @@ public class PreferencesDialog extends JDialog {
 
                 PropertySheetPanel sheet = new PropertySheetPanel();
                 sheet.setBorder(null);
-                sheet.setMode(PropertySheet.VIEW_AS_FLAT_LIST);
+                sheet.setMode(PropertySheet.VIEW_AS_CATEGORIES);
                 sheet.setProperties(beanInfo.getPropertyDescriptors());
                 sheet.readFromObject(options);
                 sheet.setDescriptionVisible(false);
