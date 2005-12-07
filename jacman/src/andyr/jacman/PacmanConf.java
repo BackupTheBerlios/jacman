@@ -22,13 +22,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-/**
- *
- * User: andyr
- * Date: May 23, 2005
- * Time: 10:07:12 AM
- *
- */
 public class PacmanConf {
 
     private File confPath;
