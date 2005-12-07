@@ -295,6 +295,7 @@ public class Jacman {
             JMenu fileMenu = new JMenu(i18n.getString("JacmanFrameMenuFile"));
             
             JMenuItem filePrefsMenuItem = new JMenuItem(i18n.getString("JacmanFrameMenuFilePrefs"));
+            filePrefsMenuItem.setIcon(JacmanUtils.loadIcon("icons/preferences_16x16.png"));
             filePrefsMenuItem.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
