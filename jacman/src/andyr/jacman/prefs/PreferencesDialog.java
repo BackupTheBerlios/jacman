@@ -99,8 +99,8 @@ public class PreferencesDialog extends JDialog {
             toolbar.setUI(new BlueishButtonBarUI());
             ButtonGroup group = new ButtonGroup();
             
-            addButton(i18n.getString("PrefsDialogGeneralOptions"), "icons/jacman_logo_32x32.png", new PrefsPanel(i18n.getString("PrefsDialogGeneralOptions"), new GeneralOptions(jacmanProperties.getProperties())), toolbar, group);
-            addButton(i18n.getString("PrefsDialogAppearanceOptions"), "icons/jacman_logo_32x32.png", new PrefsPanel(i18n.getString("PrefsDialogAppearanceOptions"), new AppearanceOptions(jacmanProperties.getProperties())), toolbar, group);
+            addButton(i18n.getString("PrefsDialogGeneralOptions"), "icons/general_32x32.png", new PrefsPanel(i18n.getString("PrefsDialogGeneralOptions"), new GeneralOptions(jacmanProperties.getProperties())), toolbar, group);
+            addButton(i18n.getString("PrefsDialogAppearanceOptions"), "icons/appearance_32x32.png", new PrefsPanel(i18n.getString("PrefsDialogAppearanceOptions"), new AppearanceOptions(jacmanProperties.getProperties())), toolbar, group);
             //addButton("Misc", "icons/jacman_logo_32x32.png", makePanel("Misc"), toolbar, group);
         }
         
@@ -144,7 +144,7 @@ public class PreferencesDialog extends JDialog {
         
     }
     
-    private JPanel makePanel(String title) {
+    /*private JPanel makePanel(String title) {
         JPanel panel = new JPanel(new BorderLayout());
         JLabel top = new JLabel(title);
         top.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -156,7 +156,7 @@ public class PreferencesDialog extends JDialog {
         panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         
         return panel;
-    }
+    }*/
 
     private void addButton(String title, String iconUrl,
             final Component component, JButtonBar bar, ButtonGroup group) {
