@@ -1,7 +1,3 @@
-/*
- * Created on Jun 20, 2005
- *
- */
 package andyr.jacman.gui;
 
 
