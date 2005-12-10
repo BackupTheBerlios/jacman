@@ -107,7 +107,12 @@ public class Jacman {
 
     public Jacman(File confPath) {
         
+        if (!initUserPrefsDirectory()) {
+            System.err.println("Can't create user directory. Haven't written code to cope with this yet, therefore I will abort. Sorry!");
+        }
+        
         try {
+            
             loadProperties();
             
         }
@@ -137,8 +142,56 @@ public class Jacman {
     private void loadProperties() throws FileNotFoundException, IOException {
         
         i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
-        jacmanProperties = PropertiesManager.getPropertiesManager(URLClassLoader.getSystemResourceAsStream(JACMAN_PROPERTIES_FILENAME)); 
+        jacmanProperties = PropertiesManager.getPropertiesManager(URLClassLoader.getSystemResourceAsStream(System.getProperty("user.home") + File.separator + JACMAN_PROPERTIES_FILENAME)); 
         
+    }
+    
+    /**
+     * This method checks for a ~/.jacman dir as this is what will contain their properties.
+     * If it doesn't exist, creates it and copies default properties file to that directory,
+     * and will be updated with subsequent use.
+     * @return true is the user prefs directory is ready for use
+     */
+    private boolean initUserPrefsDirectory() {
+        
+        String userDir = System.getProperty("user.home");
+        File jacmanUserPrefs = new File(userDir + File.separator + ".jacman");
+        
+        boolean ready = false; // returns true afterwards if init is successful
+        
+        if (!jacmanUserPrefs.exists()) {
+            // Create the user directory
+            if (jacmanUserPrefs.mkdir()) {
+                
+                // Save the default properties file to this dir
+                try {
+                    JacmanUtils.copyFile(JACMAN_PROPERTIES_FILENAME, jacmanUserPrefs.getPath() + File.separator + JACMAN_PROPERTIES_FILENAME);
+                    System.out.println("~/.jacman/" + JACMAN_PROPERTIES_FILENAME + " created.");
+                    // if all went well, set ready to true
+                    ready = true;
+                }
+                catch (FileNotFoundException e) {
+                    System.err.println("Initialisation error: Couldn't find properties file.");
+                    e.printStackTrace();
+                }
+                catch (IOException e) {
+                    System.err.println("Initialisation error: Couldn't copy properties file.");
+                    e.printStackTrace();
+                }
+            }
+        }
+        else {
+            
+            // The ~/.jacman dir exists. But we need to check that the Jacman properties file exists
+            // within.
+            if (new File(jacmanUserPrefs.getPath() + File.separator + JACMAN_PROPERTIES_FILENAME).exists()) {
+                
+                ready = true;
+            }
+            
+        }
+        
+        return ready;
     }
    
     public static void findAvailablePackages(EventList availablePkgList, EventList installedPackages) {
