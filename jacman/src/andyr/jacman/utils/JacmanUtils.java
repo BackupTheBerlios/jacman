@@ -16,7 +16,6 @@
 
 package andyr.jacman.utils;
 
-import java.awt.Insets;
 import java.net.URLClassLoader;
 
 import javax.swing.ImageIcon;
@@ -29,15 +28,24 @@ import javax.swing.JTable;
  */
 
 public final class JacmanUtils {
-	private static final Insets TOOLBAR_BUTTON_MARGIN = new Insets(1, 1, 1, 1);
 
-    
+    /**
+     * Utility method for returning an ImageIcon based on the <tt>iconName</tt> URL. Primarily
+     * utilised for adding icons to JMenuItems.
+     * @param path image resource
+     * @return an ImageIcon object
+     */
     public static ImageIcon loadIcon(String iconName) {
                 
         return new ImageIcon(URLClassLoader.getSystemResource(iconName));
     }
     
-
+    /**
+     * Utility method for setting the widths of columns within a table to their 'optimal', 
+     * i.e., wide enough to fit their contents. 
+     * 
+     * @param the JTable instance that needs its column widths changing.
+     */
     public static void setOptimalTableWidth(JTable table) {
         
         for (int col = 0; col < table.getColumnCount(); col++) {
