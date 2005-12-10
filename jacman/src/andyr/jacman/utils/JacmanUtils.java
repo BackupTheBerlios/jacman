@@ -16,7 +16,12 @@
 
 package andyr.jacman.utils;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URLClassLoader;
+import java.nio.channels.FileChannel;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
@@ -50,6 +55,33 @@ public final class JacmanUtils {
         
         for (int col = 0; col < table.getColumnCount(); col++) {
             JTableHelper.setOptimalColumnWidth(table, col);
+        }
+    }
+    
+    /**
+     * Java doesn't support it's own file copy routines in java.io, so we have to write
+     * our own. This, surprisingly, copies the file, <code>sourcePath</code>, to 
+     * destPath<code>.
+     * @param path of the source file, e.g., <code>"test/example.txt"</code>. 
+     * @param path for the destination file, e.g., <code>"anotherTest/newExample.txt"</code>.
+     * @throws FileNotFoundException if cannot find the source file or if the path to destPath
+     * doesn't exist.
+     * @throws IOException if there is a problem copying the data. 
+     */
+    public static void copyFile(String sourcePath, String destPath) throws FileNotFoundException, IOException {
+        
+        FileChannel in = null, out = null;
+        try {          
+             in = new FileInputStream(sourcePath).getChannel();
+             out = new FileOutputStream(destPath).getChannel();
+
+             in.transferTo( 0, in.size(), out);
+            
+        } finally {
+             if (in != null)
+                 in.close();
+             if (out != null)
+                 out.close();
         }
     }
 }
