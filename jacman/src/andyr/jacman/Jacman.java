@@ -99,7 +99,7 @@ public class Jacman {
     
     public static final String JACMAN_PROPERTIES_FILENAME = "jacman.properties";
 
-    private final String JACMAN_PREFS_DIR = ".jacman";
+    public final static String JACMAN_PREFS_DIR = ".jacman";
     private final String JACMAN_NAME = "Jacman";
     private final String JACMAN_VERSION_NUMBER = "0.3";
     private final String JACMAN_DEV = "Andrew Roberts";
@@ -357,7 +357,7 @@ public class Jacman {
             filePrefsMenuItem.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                    new PreferencesDialog(jacmanFrame, i18n.getString("PrefsDialogTitle"), true);
+                    new PreferencesDialog(jacmanFrame, i18n.getString("PrefsDialogTitle"), true, jacmanProperties.getProperties());
                     
                 }
                 
@@ -459,7 +459,7 @@ public class Jacman {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             
-                            InstallPackageDialog ipd = new InstallPackageDialog(jacmanFrame, i18n.getString("InstallDialogTitle"), false);
+                            InstallPackageDialog ipd = new InstallPackageDialog(jacmanFrame, i18n.getString("InstallDialogTitle"), false, jacmanProperties.getProperties());
 
                         }
                     });
@@ -480,7 +480,7 @@ public class Jacman {
                 public void actionPerformed(ActionEvent evt) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            UpdatePackagesDialog upd = new UpdatePackagesDialog(jacmanFrame, i18n.getString("UpdateDialogTitle"), false);
+                            UpdatePackagesDialog upd = new UpdatePackagesDialog(jacmanFrame, i18n.getString("UpdateDialogTitle"), false, jacmanProperties.getProperties());
                             upd.postInit();
                         }
                     });
@@ -501,7 +501,7 @@ public class Jacman {
                 public void actionPerformed(ActionEvent evt) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            RemovePackageDialog rpd = new RemovePackageDialog(jacmanFrame, i18n.getString("RemoveDialogTitle"), false);
+                            RemovePackageDialog rpd = new RemovePackageDialog(jacmanFrame, i18n.getString("RemoveDialogTitle"), false, jacmanProperties.getProperties());
                             rpd.postInit();
                         }
                     });
@@ -522,7 +522,7 @@ public class Jacman {
                 public void actionPerformed(ActionEvent evt) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            RollbackPackageDialog rpd = new RollbackPackageDialog(jacmanFrame, i18n.getString("RollbackDialogTitle"), false);
+                            RollbackPackageDialog rpd = new RollbackPackageDialog(jacmanFrame, i18n.getString("RollbackDialogTitle"), false, jacmanProperties.getProperties());
                          }
                     });
                 }
@@ -604,7 +604,7 @@ public class Jacman {
         	jacmanFrame.setVisible(true);
         
         if (jacmanProperties.getProperty("jacman.enableTray", "true").equals("true")) {
-        	new Tray(jacmanFrame);
+        	new Tray(jacmanFrame, jacmanProperties.getProperties());
         }
 
         // Get default frame icon from UIManager and convert it to an image
