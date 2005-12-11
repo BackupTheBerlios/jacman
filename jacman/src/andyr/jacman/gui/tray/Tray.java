@@ -18,6 +18,7 @@ package andyr.jacman.gui.tray;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Properties;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -41,10 +42,12 @@ public class Tray implements ActionListener {
 	private TrayIcon ti;
 	private JFrame frame;
 	private I18nManager i18n;
+    private Properties jacmanProperties;
 
-	public Tray(JFrame frame) {
+	public Tray(JFrame frame, Properties properties) {
 		this.frame = frame;
 		i18n = I18nManager.getInstance();
+        jacmanProperties = properties;
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -68,7 +71,7 @@ public class Tray implements ActionListener {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						new InstallPackageDialog(null, i18n
-								.getString("InstallDialogTitle"), false);
+								.getString("InstallDialogTitle"), false, jacmanProperties);
 					}
 				});
 			}
@@ -85,7 +88,7 @@ public class Tray implements ActionListener {
 					public void run() {
 						UpdatePackagesDialog upd = new UpdatePackagesDialog(
 								null, i18n.getString("UpdateDialogTitle"),
-								false);
+								false, jacmanProperties);
 						upd.postInit();
 					}
 				});
@@ -102,7 +105,7 @@ public class Tray implements ActionListener {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						RemovePackageDialog rpd = new RemovePackageDialog(null,
-								i18n.getString("RemoveDialogTitle"), false);
+								i18n.getString("RemoveDialogTitle"), false, jacmanProperties);
 						rpd.postInit();
 					}
 				});
@@ -120,7 +123,7 @@ public class Tray implements ActionListener {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						new RollbackPackageDialog(null, i18n
-								.getString("RollbackDialogTitle"), false);
+								.getString("RollbackDialogTitle"), false, jacmanProperties);
 					}
 				});
 			}
