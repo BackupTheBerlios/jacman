@@ -24,10 +24,12 @@ import java.awt.event.ActionListener;
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLClassLoader;
 import java.util.Locale;
+import java.util.Properties;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -66,12 +68,14 @@ public class PreferencesDialog extends JDialog {
     private JPanel content;
     private Component currentComponent;
     private I18nManager i18n;
-    private PropertiesManager jacmanProperties;
     
-    public PreferencesDialog(JFrame frame, String title, boolean modal) {
+    private GeneralOptions generalOptions;
+    private AppearanceOptions appearanceOptions;
+    private Properties jacmanProperties;
+    
+    public PreferencesDialog(JFrame frame, String title, boolean modal, Properties properties) {
         super(frame, title, modal);
-        //i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
-        
+        this.jacmanProperties = properties;
         try {
             loadProperties();
         }
@@ -82,13 +86,16 @@ public class PreferencesDialog extends JDialog {
             e.printStackTrace();
         }
         
+        generalOptions = new GeneralOptions(jacmanProperties);
+        appearanceOptions = new AppearanceOptions(jacmanProperties);
+        
         setupGUI();
     }
     
     private void loadProperties() throws FileNotFoundException, IOException {
         
         i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
-        jacmanProperties = PropertiesManager.getPropertiesManager(URLClassLoader.getSystemResourceAsStream(Jacman.JACMAN_PROPERTIES_FILENAME)); 
+         
         
     }
 
@@ -99,9 +106,9 @@ public class PreferencesDialog extends JDialog {
             toolbar.setUI(new BlueishButtonBarUI());
             ButtonGroup group = new ButtonGroup();
             
-            addButton(i18n.getString("PrefsDialogGeneralOptions"), "icons/general_32x32.png", new PrefsPanel(i18n.getString("PrefsDialogGeneralOptions"), new GeneralOptions(jacmanProperties.getProperties())), toolbar, group);
-            addButton(i18n.getString("PrefsDialogAppearanceOptions"), "icons/appearance_32x32.png", new PrefsPanel(i18n.getString("PrefsDialogAppearanceOptions"), new AppearanceOptions(jacmanProperties.getProperties())), toolbar, group);
-            //addButton("Misc", "icons/jacman_logo_32x32.png", makePanel("Misc"), toolbar, group);
+            addButton(i18n.getString("PrefsDialogGeneralOptions"), "icons/general_32x32.png", new PrefsPanel(i18n.getString("PrefsDialogGeneralOptions"), generalOptions), toolbar, group);
+            addButton(i18n.getString("PrefsDialogAppearanceOptions"), "icons/appearance_32x32.png", new PrefsPanel(i18n.getString("PrefsDialogAppearanceOptions"), appearanceOptions), toolbar, group);
+            
         }
         
         return toolbar;
@@ -119,6 +126,15 @@ public class PreferencesDialog extends JDialog {
             okButton.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
+                    
+                    // Get the values from the Options beans and update the Properties object
+                    jacmanProperties.setProperty("jacman.disposeMainMenu", String.valueOf(generalOptions.isDisposeMainMenu()));
+                    jacmanProperties.setProperty("jacman.enableTray", String.valueOf(generalOptions.isEnableSystemTray()));
+                    jacmanProperties.setProperty("jacman.startHiddenInTray", String.valueOf(generalOptions.isStartHiddenInTray()));
+                    
+                    jacmanProperties.setProperty("jacman.showWindowInfo", String.valueOf(appearanceOptions.isShowWindowInfo()));
+                    jacmanProperties.setProperty("jacman.useAntiAliasText", String.valueOf(appearanceOptions.isUseAntiAliasText()));
+                    dispose();
                    
                 }
             
@@ -144,20 +160,6 @@ public class PreferencesDialog extends JDialog {
         
     }
     
-    /*private JPanel makePanel(String title) {
-        JPanel panel = new JPanel(new BorderLayout());
-        JLabel top = new JLabel(title);
-        top.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        top.setFont(top.getFont().deriveFont(Font.BOLD));
-        top.setOpaque(true);
-        top.setBackground(panel.getBackground().brighter());
-        panel.add(top, BorderLayout.NORTH);
-        panel.setPreferredSize(new Dimension(400, 300));
-        panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        
-        return panel;
-    }*/
-
     private void addButton(String title, String iconUrl,
             final Component component, JButtonBar bar, ButtonGroup group) {
         Action action = new AbstractAction(title, JacmanUtils.loadIcon(iconUrl)) {
@@ -206,10 +208,8 @@ public class PreferencesDialog extends JDialog {
         String title;
         private JPanel pnlOptions;
         private Object options;
-        //private AppearanceOptions options;
-        
+         
         public PrefsPanel(String title, Object options) {
-        //public PrefsPanel(String title, AppearanceOptions options) {
             super(new BorderLayout());
             this.title = title;
             this.options = options;
