@@ -25,13 +25,13 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -61,7 +61,6 @@ import andyr.jacman.SwingWorker;
 import andyr.jacman.console.ConsoleDialog;
 import andyr.jacman.utils.I18nManager;
 import andyr.jacman.utils.JacmanUtils;
-import andyr.jacman.utils.PropertiesManager;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
@@ -99,25 +98,20 @@ public class UpdatePackagesDialog extends JDialog {
     private CheckableTableFormat checkableTableFormat;
     
     private I18nManager i18n;
-    private PropertiesManager jacmanProperties;
+    private Properties jacmanProperties;
     
     public static final int PACMAN_RAN = 1;
     private int returnVal = -1;
     
-    public UpdatePackagesDialog(Frame parent, String title, boolean modal) {
+    public UpdatePackagesDialog(Frame parent, String title, boolean modal, Properties properties) {
         super(parent, title, modal);
         
         i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
-        try {
-            jacmanProperties = PropertiesManager.getPropertiesManager(URLClassLoader.getSystemResourceAsStream(Jacman.JACMAN_PROPERTIES_FILENAME));
-        }
-        catch (IOException e) {
-            System.err.println("An error occurred when trying to load" + Jacman.JACMAN_PROPERTIES_FILENAME + ". Using built-in defaults instead.");
-        } 
+        jacmanProperties = properties;
+        
         installListFiltered = new InstallListFilter(packageEventList);
         
         sortedPackages = new SortedList(installListFiltered, new PackageComparitor());
-        
         
         textFilteredIssues = new TextFilterList(sortedPackages, new PackageTextFilterator());
         
