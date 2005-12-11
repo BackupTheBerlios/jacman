@@ -25,9 +25,12 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -95,10 +98,12 @@ public class Jacman {
     private PropertiesManager jacmanProperties;
     
     public static final String JACMAN_PROPERTIES_FILENAME = "jacman.properties";
+
+    private final String JACMAN_PREFS_DIR = ".jacman";
     private final String JACMAN_NAME = "Jacman";
     private final String JACMAN_VERSION_NUMBER = "0.3";
     private final String JACMAN_DEV = "Andrew Roberts";
-    private final String JACMAN_URL = "http://www.comp.leeds.ac.uk/andyr/";
+    private final String JACMAN_URL = "http://www.andy-roberts.net/software/jacman/";
     
     public Jacman() {
         this(new File("/etc/pacman.conf"));
@@ -142,7 +147,7 @@ public class Jacman {
     private void loadProperties() throws FileNotFoundException, IOException {
         
         i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
-        jacmanProperties = PropertiesManager.getPropertiesManager(URLClassLoader.getSystemResourceAsStream(System.getProperty("user.home") + File.separator + JACMAN_PROPERTIES_FILENAME)); 
+        jacmanProperties = PropertiesManager.getPropertiesManager(URLClassLoader.getSystemResourceAsStream(System.getProperty("user.home") + File.separator + JACMAN_PREFS_DIR + File.separator + JACMAN_PROPERTIES_FILENAME)); 
         
     }
     
@@ -364,8 +369,8 @@ public class Jacman {
             fileExitMenuItem.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
+                    exitGUI();
                     
-                    jacmanFrame.dispose();
                 }
             });
             fileMenu.add(fileExitMenuItem);
@@ -403,6 +408,27 @@ public class Jacman {
         jacmanMenuBar.putClientProperty(Options.HEADER_STYLE_KEY, HeaderStyle.BOTH);
         return jacmanMenuBar;
 
+    }
+    
+    private void exitGUI() {
+        
+        try {
+            
+            File out = new File(System.getProperty("user.home") + File.separator + JACMAN_PREFS_DIR + File.separator + JACMAN_PROPERTIES_FILENAME);
+            
+            jacmanProperties.getProperties().store(new FileOutputStream(out), "Jacman user properties");
+        }
+        catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        finally {
+            jacmanFrame.dispose();
+        }
     }
     
     public JPanel getMainContent() {
@@ -526,7 +552,7 @@ public class Jacman {
             
             quitButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
-                    jacmanFrame.dispose();
+                    exitGUI();
                     
                 }
             });
@@ -554,7 +580,13 @@ public class Jacman {
         
         jacmanFrame = new JFrame("Jacman - " + JACMAN_VERSION_NUMBER);
         
-        jacmanFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jacmanFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        jacmanFrame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent we) {
+                exitGUI();
+            }
+
+        });
 
         jacmanFrame.setJMenuBar(getJacmanMenus());
         
