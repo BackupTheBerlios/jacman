@@ -17,6 +17,7 @@
 package andyr.jacman.utils;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Properties;
 
 
@@ -62,9 +63,17 @@ public class PropertiesManager {
         return properties.getProperty(key);
     }
     
+    public void setProperty(String key, String value) {
+        properties.getProperty(key, value);
+    }
+    
     public Properties getProperties() {
         
         return properties;
+    }
+    
+    public void store(OutputStream out, String header) throws IOException {
+        properties.store(out, header);
     }
 
 }
