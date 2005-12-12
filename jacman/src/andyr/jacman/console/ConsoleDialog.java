@@ -61,11 +61,12 @@ public class ConsoleDialog extends JDialog {
 	public ConsoleDialog(String[] command, Dialog owner, String title,
 			boolean modal) throws HeadlessException {
 		super(owner, title, modal);
+        
 
 		i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale
 				.getDefault());
 		setupGUI();
-
+        setLocationRelativeTo(owner);
 		final String cmd[] = command;
 		final SwingWorker worker = new SwingWorker() {
 			@Override
