@@ -59,6 +59,7 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.apache.commons.collections.MultiHashMap;
 
+import andyr.jacman.gui.AboutDialog;
 import andyr.jacman.gui.Cartouche;
 import andyr.jacman.gui.FooterPanel;
 import andyr.jacman.gui.HeaderPanel;
@@ -100,10 +101,10 @@ public class Jacman {
     public static final String JACMAN_PROPERTIES_FILENAME = "jacman.properties";
 
     public final static String JACMAN_PREFS_DIR = ".jacman";
-    private final String JACMAN_NAME = "Jacman";
-    private final String JACMAN_VERSION_NUMBER = "0.3";
-    private final String JACMAN_DEV = "Andrew Roberts";
-    private final String JACMAN_URL = "http://www.andy-roberts.net/software/jacman/";
+    public final static String JACMAN_NAME = "Jacman";
+    public final static String JACMAN_VERSION_NUMBER = "0.3";
+    public final static String JACMAN_DEV = "Andrew Roberts";
+    public final static String JACMAN_URL = "http://www.andy-roberts.net/software/jacman/";
     
     public Jacman() {
         this(new File("/etc/pacman.conf"));
@@ -398,7 +399,8 @@ public class Jacman {
             helpAboutMenuItem.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                    JOptionPane.showMessageDialog(jacmanFrame, getAboutDialogPanel(), "About Jacman", JOptionPane.PLAIN_MESSAGE);
+                    //JOptionPane.showMessageDialog(jacmanFrame, getAboutDialogPanel(), "About Jacman", JOptionPane.PLAIN_MESSAGE);
+                    new AboutDialog(jacmanFrame, i18n.getString("AboutDialogTitle"), true);
                 }
             });
             helpMenu.add(helpAboutMenuItem);
@@ -593,6 +595,7 @@ public class Jacman {
         jacmanFrame.getContentPane().add(getMainContent());
 
         jacmanFrame.setSize(800,600);
+        jacmanFrame.setLocationRelativeTo(null); // centre frame on screen
         jacmanFrame.setIconImage(JacmanUtils.loadIcon("icons/jacman_logo_small.png").getImage());
         
         
@@ -606,13 +609,6 @@ public class Jacman {
         if (jacmanProperties.getProperty("jacman.enableTray", "true").equals("true")) {
         	new Tray(jacmanFrame, jacmanProperties.getProperties());
         }
-
-        // Get default frame icon from UIManager and convert it to an image
-        //Icon icon2=JacmanUtils.loadIcon("icons/jacman_logo_small.png");
-        //Image img= jacmanFrame.createImage(icon2.getIconWidth(), icon2.getIconHeight());
-        //Graphics g=img.getGraphics();
-        //icon2.paintIcon(jacmanFrame, g, 0, 0);
-        //g.dispose();
         
     }
     
@@ -648,37 +644,6 @@ public class Jacman {
         } catch (Exception e) {
             System.err.println("Could not change the look and feel: " + e);
         }
-    }
-    
-    private JPanel getAboutDialogPanel() {
-        
-        
-        JPanel aboutPanel = new JPanel(new BorderLayout());
-        
-        HeaderPanel header = new HeaderPanel("icons/jacman_logo.png",
-                i18n.getString("AboutDialogTitle") + " " + JACMAN_NAME + " " + JACMAN_VERSION_NUMBER,
-                i18n.getString("AboutDialogDevelopedBy") + " " + JACMAN_DEV,
-                JACMAN_URL);
-        
-        aboutPanel.add(header, BorderLayout.NORTH);
-        
-        StringBuilder acks = new StringBuilder("<html>" + i18n.getString("AboutDialogAcknowledgments") + "<br>");
-        
-        acks.append("&nbsp;&nbsp;Jon-Anders Teigen (soniX)" + "<br>");
-        acks.append("&nbsp;&nbsp;James Sudbury (Sudman1)" + "<br>");
-        acks.append("&nbsp;&nbsp;Romain Guy" + "<br>");
-        acks.append("&nbsp;&nbsp;Santhosh Kumar" + "<br>");
-        acks.append("&nbsp;&nbsp;Dusty Phillips (Dusty)" + "<br>");
-        acks.append("&nbsp;&nbsp;John Lipsky" + "<br>");
-        acks.append("<br>" + i18n.getString("AboutDialogTranslations") + "<br>");
-        acks.append("&nbsp;&nbsp;" + i18n.getString("LanguageSpanish") + ": Leonardo Gallego (Sud_crow)" + "<br>");
-        acks.append("&nbsp;&nbsp;" + i18n.getString("LanguagePolish") + ": Piotr Mali\u0144ski (Riklaunim)" + "<br>");
-        acks.append("&nbsp;&nbsp;" + i18n.getString("LanguageSwedish") + ": Jens Persson (Xerces2)" + "<br>");
-        acks.append("&nbsp;&nbsp;" + i18n.getString("LanguageGreek") + ": Stavros Griannouris (Stavrosg)" + "<br>");
-        acks.append("</html>");
-        
-        aboutPanel.add(new JLabel(acks.toString()), BorderLayout.CENTER);
-        return aboutPanel;
     }
     
     public JFrame getFrame() {
