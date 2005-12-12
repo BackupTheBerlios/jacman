@@ -73,11 +73,12 @@ import andyr.jacman.utils.JTableHelper;
 import andyr.jacman.utils.JacmanUtils;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.impl.beans.BeanTableFormat;
 import ca.odell.glazedlists.swing.EventTableModel;
 import ca.odell.glazedlists.swing.TableComparatorChooser;
-import ca.odell.glazedlists.swing.TextFilterList;
+import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
 
 import com.l2fprod.common.model.DefaultBeanInfoResolver;
 import com.l2fprod.common.propertysheet.Property;
@@ -98,7 +99,7 @@ public class RemovePackageDialog extends JDialog {
     private JPanel pnlRemoveOptions;
     private JPanel pnlPackageDescPane;
     private JPanel pnlPackageList;
-    private JTextField txtSearch;
+    private JTextField txtSearch = new JTextField();
     
     private ElegantPanel optionsView;
     private ElegantPanel descView;
@@ -118,9 +119,6 @@ public class RemovePackageDialog extends JDialog {
     private EventList packageEventList = new BasicEventList();
     private SortedList sortedPackages;
     private EventTableModel packagesTableModel;
-    private TextFilterList textFilteredIssues;
-    private InstallListFilter installListFiltered;
-    
     private CheckableTableFormat checkableTableFormat;
 
     private final RemoveOptions options = new RemoveOptions();
@@ -137,10 +135,8 @@ public class RemovePackageDialog extends JDialog {
         i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
         jacmanProperties = properties;
          
-        installListFiltered = new InstallListFilter(packageEventList);
-        
-        sortedPackages = new SortedList(installListFiltered, new PackageComparitor());
-        textFilteredIssues = new TextFilterList(sortedPackages, new PackageTextFilterator());
+        sortedPackages = new SortedList(packageEventList, new PackageComparitor());
+        FilterList textFilteredIssues = new FilterList(sortedPackages, new TextComponentMatcherEditor(txtSearch, new PackageTextFilterator()));
         
         String[] propertyNames = {"name", "version", "description", "size"};
         String[] columnNames = { i18n.getString("PackageTableColumnName"),
@@ -148,10 +144,10 @@ public class RemovePackageDialog extends JDialog {
                 i18n.getString("PackageTableColumnDescription"),
                 i18n.getString("PackageTableColumnSize") };
         
-        
         checkableTableFormat = new CheckableTableFormat(new BeanTableFormat(InstalledPacmanPkg.class, propertyNames, columnNames));
         packagesTableModel = new EventTableModel(textFilteredIssues, checkableTableFormat);
         
+        this.setLocation(parent.getLocation());
         setupGUI();
         
         final InfiniteProgressPanel pane = new InfiniteProgressPanel(i18n.getString("LoadingPackagesMessage"));
@@ -326,7 +322,6 @@ public class RemovePackageDialog extends JDialog {
             
             GridBagConstraints gridBagConstraints = new GridBagConstraints();
             
-            txtSearch = textFilteredIssues.getFilterEdit();
             JLabel lblSearch = new JLabel(i18n.getString("SearchLabel"));
             lblSearch.setLabelFor(txtSearch);
             
@@ -338,7 +333,7 @@ public class RemovePackageDialog extends JDialog {
             eraseSearch.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                    textFilteredIssues.getFilterEdit().setText("");
+                    txtSearch.setText("");
                     
                 }
                 

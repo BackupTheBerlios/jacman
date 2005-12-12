@@ -63,11 +63,12 @@ import andyr.jacman.utils.I18nManager;
 import andyr.jacman.utils.JacmanUtils;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.impl.beans.BeanTableFormat;
 import ca.odell.glazedlists.swing.EventTableModel;
 import ca.odell.glazedlists.swing.TableComparatorChooser;
-import ca.odell.glazedlists.swing.TextFilterList;
+import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
 
 public class UpdatePackagesDialog extends JDialog {
 
@@ -75,7 +76,7 @@ public class UpdatePackagesDialog extends JDialog {
     private JSplitPane verticalSplit;
     private JPanel pnlPackageDescPane;
     private JPanel pnlPackageList;
-    private JTextField txtSearch;
+    private JTextField txtSearch = new JTextField();
     
     private ElegantPanel ignoreView;
     private ElegantPanel descView;
@@ -85,15 +86,12 @@ public class UpdatePackagesDialog extends JDialog {
     
     private JLabel packageName = new JLabel();
     private JLabel packageDesc = new JLabel();
-    //private JLabel installDate = new JLabel();
     private JLabel installedVersion = new JLabel();
     private JLabel size = new JLabel();
     
     private EventList packageEventList = new BasicEventList();
     private SortedList sortedPackages;
     private EventTableModel packagesTableModel;
-    private TextFilterList textFilteredIssues;
-    private InstallListFilter installListFiltered;
     
     private CheckableTableFormat checkableTableFormat;
     
@@ -109,11 +107,9 @@ public class UpdatePackagesDialog extends JDialog {
         i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
         jacmanProperties = properties;
         
-        installListFiltered = new InstallListFilter(packageEventList);
+        sortedPackages = new SortedList(packageEventList, new PackageComparitor());
         
-        sortedPackages = new SortedList(installListFiltered, new PackageComparitor());
-        
-        textFilteredIssues = new TextFilterList(sortedPackages, new PackageTextFilterator());
+        FilterList textFilteredIssues = new FilterList(sortedPackages, new TextComponentMatcherEditor(txtSearch, new PackageTextFilterator()));
         
         String[] propertyNames = {"name", "version", "description", "size"};
         
@@ -126,6 +122,7 @@ public class UpdatePackagesDialog extends JDialog {
         checkableTableFormat = new CheckableTableFormat(new BeanTableFormat(InstalledPacmanPkg.class, propertyNames, columnNames));
         packagesTableModel = new EventTableModel(textFilteredIssues, checkableTableFormat);
         
+        this.setLocation(parent.getLocation());
         setupGUI();
         
         //final Component oldGlassPane = getGlassPane();
@@ -318,7 +315,6 @@ public class UpdatePackagesDialog extends JDialog {
             
             GridBagConstraints gridBagConstraints = new GridBagConstraints();
     
-            txtSearch = textFilteredIssues.getFilterEdit();
             JLabel lblSearch = new JLabel(i18n.getString("SearchLabel"));
             lblSearch.setLabelFor(txtSearch);
             
@@ -330,7 +326,7 @@ public class UpdatePackagesDialog extends JDialog {
             eraseSearch.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                    textFilteredIssues.getFilterEdit().setText("");
+                    txtSearch.setText("");
                     
                 }
                 
@@ -351,7 +347,7 @@ public class UpdatePackagesDialog extends JDialog {
             gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
             gridBagConstraints.weightx = 1.0;
             
-            filterPanel.add(textFilteredIssues.getFilterEdit(), gridBagConstraints);
+            filterPanel.add(txtSearch, gridBagConstraints);
             
             pnlPackageList.add(filterPanel, BorderLayout.NORTH);
             pnlPackageList.add(new JScrollPane(getPackageListTable()), BorderLayout.CENTER);

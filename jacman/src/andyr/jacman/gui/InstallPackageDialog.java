@@ -71,11 +71,12 @@ import andyr.jacman.utils.I18nManager;
 import andyr.jacman.utils.JacmanUtils;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.impl.beans.BeanTableFormat;
 import ca.odell.glazedlists.swing.EventTableModel;
 import ca.odell.glazedlists.swing.TableComparatorChooser;
-import ca.odell.glazedlists.swing.TextFilterList;
+import ca.odell.glazedlists.swing.TextComponentMatcherEditor;
 
 import com.l2fprod.common.model.DefaultBeanInfoResolver;
 import com.l2fprod.common.propertysheet.Property;
@@ -97,7 +98,7 @@ public class InstallPackageDialog extends JDialog {
     private JPanel pnlPackageDescPane;
     private JPanel pnlPackageList;
     private JPanel pnlInstallOptions;
-    private JTextField txtSearch;
+    private JTextField txtSearch = new JTextField();
     
     private ElegantPanel filterView;
     private ElegantPanel descView;
@@ -120,7 +121,6 @@ public class InstallPackageDialog extends JDialog {
     private EventList packageEventList = new BasicEventList();
     private SortedList sortedPackages;
     private EventTableModel packagesTableModel;
-    private TextFilterList textFilteredIssues;
     private InstallListFilter installListFiltered;
     
     private CheckableTableFormat checkableTableFormat;
@@ -136,13 +136,10 @@ public class InstallPackageDialog extends JDialog {
         
         jacmanProperties = properties;
         i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
-                
+        
         installListFiltered = new InstallListFilter(packageEventList);
-        
-        sortedPackages = new SortedList(installListFiltered, new PackageComparitor());
-        
-        
-        textFilteredIssues = new TextFilterList(sortedPackages, new PackageTextFilterator());
+        sortedPackages = new SortedList(packageEventList, new PackageComparitor());
+        FilterList textFilteredIssues = new FilterList(sortedPackages, new TextComponentMatcherEditor(txtSearch, new PackageTextFilterator()));
         
         String[] propertyNames = {"name", "installedVersion", "version", "description", "repository", "size"};
         String[] columnNames = { i18n.getString("PackageTableColumnName"),
@@ -154,9 +151,9 @@ public class InstallPackageDialog extends JDialog {
         
         
         checkableTableFormat = new CheckableTableFormat(new BeanTableFormat(PacmanPkg.class, propertyNames, columnNames));
-        //checkableTableFormat = new PackageTableFormat(new BeanTableFormat(PacmanPkg.class, propertyNames, columnNames));
         packagesTableModel = new EventTableModel(textFilteredIssues, checkableTableFormat);
         
+        this.setLocation(parent.getLocation());
         setupGUI();
         
         final InfiniteProgressPanel pane = new InfiniteProgressPanel(i18n.getString("LoadingPackagesMessage"));
@@ -191,8 +188,7 @@ public class InstallPackageDialog extends JDialog {
     }
     
     private JPanel getPackageDescPanel() {
-        
-
+ 
         if (pnlPackageDescPane == null) {
             
             JPanel pnlPackageDesc = new JPanel();
@@ -369,7 +365,6 @@ public class InstallPackageDialog extends JDialog {
             
             GridBagConstraints gridBagConstraints = new GridBagConstraints();
             
-            txtSearch = textFilteredIssues.getFilterEdit();
             JLabel lblSearch = new JLabel(i18n.getString("SearchLabel"));
             lblSearch.setLabelFor(txtSearch);
             
@@ -464,7 +459,6 @@ public class InstallPackageDialog extends JDialog {
                 
                 List commandArgs = new ArrayList();
                 commandArgs.add("pacman");
-                //commandArgs.add("--noconfirm");
                 commandArgs.addAll(options.getInstallOptionsArgs());
                 
                 List selectedPackages = checkableTableFormat.getSelection();
