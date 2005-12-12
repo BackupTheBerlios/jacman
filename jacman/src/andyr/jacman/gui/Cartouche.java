@@ -7,6 +7,7 @@ package andyr.jacman.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -149,12 +150,14 @@ public class Cartouche extends JPanel implements MouseListener {
 		if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) == MouseEvent.BUTTON1_MASK) {
 			mousePressed = true;
 		}
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		repaint();
 	}
 
 	public void mouseExited(MouseEvent e) {
 		mouseOver = false;
 		mousePressed = false;
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		repaint();
 	}
 
