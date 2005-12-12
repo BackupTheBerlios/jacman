@@ -244,7 +244,7 @@ public class ConsoleDialog extends JDialog {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				System.out.println("PACMAN STD_OUT DONE");
+				//System.out.println("PACMAN STD_OUT DONE");
 				btnCloseDialog.setEnabled(true);
 			}
 		}.start();
@@ -266,7 +266,7 @@ public class ConsoleDialog extends JDialog {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				System.out.println("PACMAN ERR_OUT DONE");
+				//System.out.println("PACMAN ERR_OUT DONE");
 			}
 		}.start();
 	}
