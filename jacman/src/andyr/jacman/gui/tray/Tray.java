@@ -29,6 +29,7 @@ import javax.swing.UIManager;
 import org.jdesktop.jdic.tray.SystemTray;
 import org.jdesktop.jdic.tray.TrayIcon;
 
+import andyr.jacman.gui.AboutDialog;
 import andyr.jacman.gui.InstallPackageDialog;
 import andyr.jacman.gui.RemovePackageDialog;
 import andyr.jacman.gui.RollbackPackageDialog;
@@ -44,7 +45,7 @@ public class Tray implements ActionListener {
 	private I18nManager i18n;
     private Properties jacmanProperties;
 
-	public Tray(JFrame frame, Properties properties) {
+	public Tray(final JFrame frame, Properties properties) {
 		this.frame = frame;
 		i18n = I18nManager.getInstance();
         jacmanProperties = properties;
@@ -136,6 +137,11 @@ public class Tray implements ActionListener {
 		JMenuItem about = new JMenuItem();
 		about.setText(i18n.getString("JacmanFrameMenuHelpAbout"));
 		about.setIcon(JacmanUtils.loadIcon("icons/about.png"));
+        about.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                new AboutDialog(frame, i18n.getString("AboutDialogTitle"), true);
+            }
+        });
 
 		// QUIT
 		menu.addSeparator();
