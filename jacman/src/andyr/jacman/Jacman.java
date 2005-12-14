@@ -394,12 +394,14 @@ public class Jacman {
             
             JMenu helpMenu = new JMenu(i18n.getString("JacmanFrameMenuHelp"));
 
-            JMenuItem helpAboutMenuItem = new JMenuItem(i18n.getString("JacmanFrameMenuHelpAbout"), JacmanUtils.loadIcon("icons/about.png"));
+            //JMenuItem helpAboutMenuItem = new JMenuItem(i18n.getString("JacmanFrameMenuHelpAbout"), JacmanUtils.loadIcon("icons/about.png"));
+            JMenuItem helpAboutMenuItem = new JMenuItem(i18n.getString("JacmanFrameMenuHelpAbout"), JacmanUtils.loadIcon("icons/jacman_logo_small.png"));
+            
+            
             
             helpAboutMenuItem.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                    //JOptionPane.showMessageDialog(jacmanFrame, getAboutDialogPanel(), "About Jacman", JOptionPane.PLAIN_MESSAGE);
                     new AboutDialog(jacmanFrame, i18n.getString("AboutDialogTitle"), true);
                 }
             });
@@ -462,14 +464,15 @@ public class Jacman {
                         public void run() {
                             
                             InstallPackageDialog ipd = new InstallPackageDialog(jacmanFrame, i18n.getString("InstallDialogTitle"), false, jacmanProperties.getProperties());
-
+                            
                         }
                     });
                 }
             });
+            int y = 0;
             gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.gridx = 0;
-            gridBagConstraints.gridy = 0;
+            gridBagConstraints.gridy = y++;
             gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
             gridBagConstraints.anchor = GridBagConstraints.NORTH;
             gridBagConstraints.insets = new Insets(12, 0, 0, 0);
@@ -490,7 +493,7 @@ public class Jacman {
             });
             gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.gridx = 0;
-            gridBagConstraints.gridy = 1;
+            gridBagConstraints.gridy = y++;
             gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
             gridBagConstraints.anchor = GridBagConstraints.NORTH;
             gridBagConstraints.insets = new Insets(12, 0, 0, 0);
@@ -511,7 +514,7 @@ public class Jacman {
             });
             gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.gridx = 0;
-            gridBagConstraints.gridy = 2;
+            gridBagConstraints.gridy = y++;
             gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
             gridBagConstraints.anchor = GridBagConstraints.NORTH;
             gridBagConstraints.insets = new Insets(12, 0, 0, 0);
@@ -531,7 +534,27 @@ public class Jacman {
             });
             gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.gridx = 0;
-            gridBagConstraints.gridy = 3;
+            gridBagConstraints.gridy = y++;
+            gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+            gridBagConstraints.anchor = GridBagConstraints.NORTH;
+            gridBagConstraints.insets = new Insets(12, 0, 0, 0);
+            buttons.add(c, gridBagConstraints);
+            
+            c = new Cartouche(JacmanUtils.loadIcon("icons/optimise_48x48.png"), i18n.getString("JacmanFrameOptimiseBtn"));
+            buttons.add(c);
+            buttons.add(Box.createVerticalStrut(12));
+            c.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            
+                         }
+                    });
+                }
+            });
+            gridBagConstraints = new GridBagConstraints();
+            gridBagConstraints.gridx = 0;
+            gridBagConstraints.gridy = y++;
             gridBagConstraints.gridheight = GridBagConstraints.REMAINDER;
             gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
             gridBagConstraints.anchor = GridBagConstraints.NORTH;
@@ -542,7 +565,7 @@ public class Jacman {
             Box rangee = Box.createHorizontalBox();
             
             JLabel copyright;
-            rangee.add(copyright = new JLabel("© 2005 Andrew Roberts"));
+            rangee.add(copyright = new JLabel("© 2005 Andrew Roberts and the Jacman Team"));
             copyright.setFont(copyright.getFont().deriveFont(Font.BOLD));
             rangee.setBorder(new EmptyBorder(3, 3, 3, 3));
                       
