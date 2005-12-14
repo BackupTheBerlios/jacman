@@ -26,13 +26,14 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import andyr.jacman.utils.I18nManager;
-import ca.odell.glazedlists.AbstractFilterList;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
+import ca.odell.glazedlists.matchers.Matcher;
 import ca.odell.glazedlists.swing.EventListModel;
 import ca.odell.glazedlists.swing.EventSelectionModel;
 
-public class InstallListFilter extends AbstractFilterList implements ListSelectionListener {
+public class InstallListFilter extends AbstractMatcherEditor implements ListSelectionListener {
 
     /** a list of users */
     private EventList packagesEventList;
@@ -48,7 +49,7 @@ public class InstallListFilter extends AbstractFilterList implements ListSelecti
      * must contain only Issue objects.
      */
     public InstallListFilter(EventList source) {
-        super(source);
+        //super(source);
 
         i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
         
@@ -69,7 +70,7 @@ public class InstallListFilter extends AbstractFilterList implements ListSelecti
         packagesSelectedList = userSelectionModel.getSelected();
         userSelect.addListSelectionListener(this);
 
-        handleFilterChanged();
+        //handleFilterChanged();
     }
 
     /**
@@ -84,30 +85,11 @@ public class InstallListFilter extends AbstractFilterList implements ListSelecti
      * When the JList selection changes, refilter.
      */
     public void valueChanged(ListSelectionEvent e) {
-        handleFilterChanged();
+        //handleFilterChanged();
+        Matcher newMatcher = new InstallMatcher(packagesSelectedList);
+        fireChanged(newMatcher);
     }
 
-    /**
-     * Test whether to include or not include the specified issue based
-     * on whether or not their user is selected.
-     */
-    @Override
-    public boolean filterMatches(Object o) {
-        if (o == null) return false;
-        if (packagesSelectedList.isEmpty()) return true;
-        PacmanPkg pkg = (PacmanPkg)o;
-        
-        if (packagesSelectedList.contains("All")) {
-            return true;
-        }
-        else if (packagesSelectedList.contains("Not installed")) {
-            if (pkg.getInstalledVersion().equals("--")) {
-                return true;
-            }
-        }
-        
-        return false;
-        
-    }
+    
 }
 
