@@ -37,6 +37,7 @@ public class AppearanceOptions {
      * @param showWindowInfo The showWindowInfo to set.
      */
     public void setShowWindowInfo(boolean showWindowInfo) {
+        
         this.showWindowInfo = showWindowInfo;
     }
     /**

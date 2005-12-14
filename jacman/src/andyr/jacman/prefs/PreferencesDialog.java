@@ -89,7 +89,8 @@ public class PreferencesDialog extends JDialog {
         generalOptions = new GeneralOptions(jacmanProperties);
         appearanceOptions = new AppearanceOptions(jacmanProperties);
         
-        setupGUI();
+        setupGUI(frame);
+        
     }
     
     private void loadProperties() throws FileNotFoundException, IOException {
@@ -193,12 +194,13 @@ public class PreferencesDialog extends JDialog {
         repaint();
     }
         
-    private void setupGUI() {
+    private void setupGUI(JFrame frame) {
         
         setLayout(new BorderLayout());
         getContentPane().add(getContentsPanel());
         
         setSize(600, 400);
+        setLocationRelativeTo(frame);
         setVisible(true);
         
     }
@@ -236,13 +238,13 @@ public class PreferencesDialog extends JDialog {
                 DefaultBeanInfoResolver resolver = new DefaultBeanInfoResolver();
                  
                 BeanInfo beanInfo = resolver.getBeanInfo(options);
-
+                
                 PropertySheetPanel sheet = new PropertySheetPanel();
                 sheet.setBorder(null);
                 sheet.setMode(PropertySheet.VIEW_AS_CATEGORIES);
                 sheet.setProperties(beanInfo.getPropertyDescriptors());
                 sheet.readFromObject(options);
-                sheet.setDescriptionVisible(false);
+                sheet.setDescriptionVisible(true);
                 sheet.setSortingCategories(false);
                 sheet.setSortingProperties(true);
                 pnlOptions.add(sheet, BorderLayout.CENTER);
@@ -251,6 +253,8 @@ public class PreferencesDialog extends JDialog {
                 PropertyChangeListener listener = new PropertyChangeListener() {
                   public void propertyChange(PropertyChangeEvent evt) {
                     Property prop = (Property)evt.getSource();
+                    System.out.println(prop.getName());
+                    
                     prop.writeToObject(options);
                     
                   }

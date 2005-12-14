@@ -21,6 +21,7 @@ import java.util.Locale;
 import andyr.jacman.utils.I18nManager;
 
 import com.l2fprod.common.beans.BaseBeanInfo;
+import com.l2fprod.common.beans.ExtendedPropertyDescriptor;
 
 /**
  * 
@@ -37,8 +38,15 @@ public class GeneralOptionsBeanInfo extends BaseBeanInfo {
         addProperty("disposeMainMenu").setCategory("Behaviour").setDisplayName(i18n.getString("GeneralOptionsDisposeMainMenu"));
         
         // System tray properties
-        addProperty("enableSystemTray").setCategory("System tray").setDisplayName(i18n.getString("GeneralOptionsEnableTray"));
-        addProperty("startHiddenInTray").setCategory("System tray").setDisplayName(i18n.getString("GeneralOptionsStartInTray"));
+        ExtendedPropertyDescriptor epd = addProperty("enableSystemTray");
+        epd.setCategory("System tray");
+        epd.setDisplayName(i18n.getString("GeneralOptionsEnableTray"));
+        epd.setShortDescription(i18n.getString("GeneralOptionsEnableTrayDesc"));
+        
+        epd = addProperty("startHiddenInTray");
+        epd.setCategory("System tray");
+        epd.setDisplayName(i18n.getString("GeneralOptionsStartInTray"));
+        epd.setShortDescription(i18n.getString("GeneralOptionsStartInTrayDesc"));
         
         
     }

@@ -21,6 +21,7 @@ import java.util.Locale;
 import andyr.jacman.utils.I18nManager;
 
 import com.l2fprod.common.beans.BaseBeanInfo;
+import com.l2fprod.common.beans.ExtendedPropertyDescriptor;
 
 /**
  * 
@@ -34,8 +35,13 @@ public class AppearanceOptionsBeanInfo extends BaseBeanInfo {
         super(AppearanceOptions.class);
         I18nManager i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
         
-        addProperty("useAntiAliasText").setDisplayName(i18n.getString("AppearanceOptionsAntiAlias"));
-        addProperty("showWindowInfo").setDisplayName(i18n.getString("AppearanceOptionsWindowInfo"));
+        ExtendedPropertyDescriptor epd = addProperty("useAntiAliasText");
+        epd.setDisplayName(i18n.getString("AppearanceOptionsAntiAlias"));
+        epd.setShortDescription(i18n.getString("AppearanceOptionsAntiAliasDesc"));
+        
+        epd = addProperty("showWindowInfo");
+        epd.setDisplayName(i18n.getString("AppearanceOptionsWindowInfo"));
+        epd.setShortDescription(i18n.getString("AppearanceOptionsWindowInfoDesc"));
     }
     
 }
