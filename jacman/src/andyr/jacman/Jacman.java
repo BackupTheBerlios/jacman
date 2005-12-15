@@ -18,8 +18,10 @@
 package andyr.jacman;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -59,6 +61,7 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.apache.commons.collections.MultiHashMap;
 
+import andyr.jacman.console.ConsoleDialog;
 import andyr.jacman.gui.AboutDialog;
 import andyr.jacman.gui.Cartouche;
 import andyr.jacman.gui.FooterPanel;
@@ -547,7 +550,8 @@ public class Jacman {
                 public void actionPerformed(ActionEvent evt) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            
+                            String[] command = {"pacman-optimize"};
+                            new ConsoleDialog(command, jacmanFrame, i18n.getString("JacmanFrameOptimiseBtn"), true);
                          }
                     });
                 }
