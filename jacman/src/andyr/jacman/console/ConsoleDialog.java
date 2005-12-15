@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -58,7 +59,7 @@ public class ConsoleDialog extends JDialog {
 
 	// TODO Make code reusable and pretty
 
-	public ConsoleDialog(String[] command, Dialog owner, String title,
+    public ConsoleDialog(String[] command, Dialog owner, String title,
 			boolean modal) throws HeadlessException {
 		super(owner, title, modal);
         
@@ -79,6 +80,29 @@ public class ConsoleDialog extends JDialog {
 		setVisible(true);
 	}
 
+    public ConsoleDialog(String[] command, Frame owner, String title,
+            boolean modal) throws HeadlessException {
+    
+        // TODO This is constructor is a quick hack! Perhaps Jon-Anders
+        // can tidy this class up overall.
+        
+        super(owner, title, modal);
+        i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale
+                .getDefault());
+        setupGUI();
+        setLocationRelativeTo(owner);
+        final String cmd[] = command;
+        final SwingWorker worker = new SwingWorker() {
+            @Override
+            public Object construct() {
+                runCommand(cmd);
+                return "done";
+            }
+        };
+        worker.start();
+        setVisible(true);
+    }
+ 
 	public JPanel getConsolePanel() {
 
 		if (consolePanel == null) {
