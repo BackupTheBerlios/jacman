@@ -24,10 +24,8 @@ import java.awt.event.ActionListener;
 import java.beans.BeanInfo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URLClassLoader;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -43,11 +41,9 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
 
-import andyr.jacman.Jacman;
 import andyr.jacman.gui.EqualsLayout;
 import andyr.jacman.utils.I18nManager;
 import andyr.jacman.utils.JacmanUtils;
-import andyr.jacman.utils.PropertiesManager;
 
 import com.l2fprod.common.model.DefaultBeanInfoResolver;
 import com.l2fprod.common.propertysheet.Property;
@@ -253,7 +249,7 @@ public class PreferencesDialog extends JDialog {
                 PropertyChangeListener listener = new PropertyChangeListener() {
                   public void propertyChange(PropertyChangeEvent evt) {
                     Property prop = (Property)evt.getSource();
-                    System.out.println(prop.getName());
+                    //System.out.println(prop.getName());
                     
                     prop.writeToObject(options);
                     
