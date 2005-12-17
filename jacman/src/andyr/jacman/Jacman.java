@@ -691,9 +691,10 @@ public class Jacman {
                 jacmanProperties.load(URLClassLoader.getSystemResourceAsStream(JACMAN_PROPERTIES_FILENAME));
                 useaa = jacmanProperties.getProperty("jacman.useAntiAliasText", "true");
                 
-                if (useaa.equals("true")) {
-                    System.setProperty("swing.aatext", "true");
-                }
+                
+            }
+            if (useaa.equals("true")) {
+                System.setProperty("swing.aatext", "true");
             }
         }
         catch (FileNotFoundException e1) {
