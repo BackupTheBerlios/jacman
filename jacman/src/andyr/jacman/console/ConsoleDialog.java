@@ -34,6 +34,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.border.EmptyBorder;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -122,9 +123,9 @@ public class ConsoleDialog extends JDialog {
 
 		if (mainContent == null) {
 			mainContent = new JPanel(new BorderLayout());
-			mainContent.add(
-					new JLabel(i18n.getString("ConsoleDialogLblOutput")),
-					BorderLayout.NORTH);
+            JLabel lblConsoleOutput = new JLabel(i18n.getString("ConsoleDialogLblOutput"));
+            lblConsoleOutput.setBorder(new EmptyBorder(3,3,3,3));
+			mainContent.add(lblConsoleOutput, BorderLayout.NORTH);
 			mainContent.add(getConsolePanel(), BorderLayout.CENTER);
 
 			btnCloseDialog = new JButton(i18n.getString("ConsoleDialogBtnDone"));
