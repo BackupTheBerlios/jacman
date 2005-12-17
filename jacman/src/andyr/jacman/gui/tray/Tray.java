@@ -66,7 +66,7 @@ public class Tray implements ActionListener {
 		JMenuItem installPackages = new JMenuItem();
 		installPackages.setText(I18nManager.getInstance().getString(
 				"JacmanFrameInstallPackagesBtn"));
-		installPackages.setIcon(JacmanUtils.loadIcon("icons/install.png"));
+		installPackages.setIcon(JacmanUtils.loadIcon("icons/install_16x16.png"));
 		installPackages.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
@@ -82,7 +82,7 @@ public class Tray implements ActionListener {
 		// UPDATE
 		JMenuItem updatePackages = new JMenuItem();
 		updatePackages.setText(i18n.getString("JacmanFrameUpdatePackagesBtn"));
-		updatePackages.setIcon(JacmanUtils.loadIcon("icons/upgrade.png"));
+		updatePackages.setIcon(JacmanUtils.loadIcon("icons/upgrade_16x16.png"));
 		updatePackages.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
@@ -100,7 +100,7 @@ public class Tray implements ActionListener {
 		// REMOVE
 		JMenuItem removePackages = new JMenuItem();
 		removePackages.setText(i18n.getString("JacmanFrameRemovePackagesBtn"));
-		removePackages.setIcon(JacmanUtils.loadIcon("icons/remove.png"));
+		removePackages.setIcon(JacmanUtils.loadIcon("icons/remove_16x16.png"));
 		removePackages.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
@@ -118,7 +118,7 @@ public class Tray implements ActionListener {
 		JMenuItem rollbackPackages = new JMenuItem();
 		rollbackPackages.setText(i18n
 				.getString("JacmanFrameRollbackPackagesBtn"));
-		rollbackPackages.setIcon(JacmanUtils.loadIcon("icons/sync.png"));
+		rollbackPackages.setIcon(JacmanUtils.loadIcon("icons/sync_16x16.png"));
 		rollbackPackages.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
@@ -132,11 +132,10 @@ public class Tray implements ActionListener {
 		menu.add(rollbackPackages);
 
 		// ABOUT
-		// TODO Refactor about dialog out from Jacman.java so it can be reused in tray
 		//menu.addSeparator();
 		JMenuItem about = new JMenuItem();
 		about.setText(i18n.getString("JacmanFrameMenuHelpAbout"));
-		about.setIcon(JacmanUtils.loadIcon("icons/about.png"));
+		about.setIcon(JacmanUtils.loadIcon("icons/jacman_logo_small.png"));
         about.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 new AboutDialog(frame, i18n.getString("AboutDialogTitle"), true);
