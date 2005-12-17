@@ -29,6 +29,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -73,7 +75,6 @@ import andyr.jacman.gui.tray.Tray;
 import andyr.jacman.prefs.PreferencesDialog;
 import andyr.jacman.utils.I18nManager;
 import andyr.jacman.utils.JacmanUtils;
-import andyr.jacman.utils.PropertiesManager;
 import ca.odell.glazedlists.EventList;
 
 import com.jgoodies.plaf.HeaderStyle;
@@ -96,7 +97,7 @@ public class Jacman {
     private JPanel mainContent;
     
     private I18nManager i18n;
-    private PropertiesManager jacmanProperties;
+    private Properties jacmanProperties;
     
     public static final String JACMAN_PROPERTIES_FILENAME = "jacman.properties";
 
@@ -148,7 +149,9 @@ public class Jacman {
     private void loadProperties() throws FileNotFoundException, IOException {
         
         i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
-        jacmanProperties = PropertiesManager.getPropertiesManager(URLClassLoader.getSystemResourceAsStream(System.getProperty("user.home") + File.separator + JACMAN_PREFS_DIR + File.separator + JACMAN_PROPERTIES_FILENAME)); 
+        System.out.println(System.getProperty("user.home") + File.separator + JACMAN_PREFS_DIR + File.separator + JACMAN_PROPERTIES_FILENAME);
+        jacmanProperties = new Properties();
+        jacmanProperties.load(new FileInputStream(System.getProperty("user.home") + File.separator + JACMAN_PREFS_DIR + File.separator + JACMAN_PROPERTIES_FILENAME)); 
         
     }
     
@@ -172,7 +175,7 @@ public class Jacman {
                 // Save the default properties file to this dir
                 try {
                     JacmanUtils.copyFile(JACMAN_PROPERTIES_FILENAME, jacmanUserPrefs.getPath() + File.separator + JACMAN_PROPERTIES_FILENAME);
-                    System.out.println("~/.jacman/" + JACMAN_PROPERTIES_FILENAME + " created.");
+                    //System.out.println("~/.jacman/" + JACMAN_PROPERTIES_FILENAME + " created.");
                     // if all went well, set ready to true
                     ready = true;
                 }
@@ -358,7 +361,7 @@ public class Jacman {
             filePrefsMenuItem.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                    new PreferencesDialog(jacmanFrame, i18n.getString("PrefsDialogTitle"), true, jacmanProperties.getProperties());
+                    new PreferencesDialog(jacmanFrame, i18n.getString("PrefsDialogTitle"), true, jacmanProperties);
                     
                 }
                 
@@ -412,7 +415,7 @@ public class Jacman {
             
             File out = new File(System.getProperty("user.home") + File.separator + JACMAN_PREFS_DIR + File.separator + JACMAN_PROPERTIES_FILENAME);
             
-            jacmanProperties.getProperties().store(new FileOutputStream(out), "Jacman user properties");
+            jacmanProperties.store(new FileOutputStream(out), "Jacman user properties");
         }
         catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
@@ -455,7 +458,7 @@ public class Jacman {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             
-                            InstallPackageDialog ipd = new InstallPackageDialog(jacmanFrame, i18n.getString("InstallDialogTitle"), false, jacmanProperties.getProperties());
+                            InstallPackageDialog ipd = new InstallPackageDialog(jacmanFrame, i18n.getString("InstallDialogTitle"), false, jacmanProperties);
                             
                         }
                     });
@@ -477,7 +480,7 @@ public class Jacman {
                 public void actionPerformed(ActionEvent evt) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            UpdatePackagesDialog upd = new UpdatePackagesDialog(jacmanFrame, i18n.getString("UpdateDialogTitle"), false, jacmanProperties.getProperties());
+                            UpdatePackagesDialog upd = new UpdatePackagesDialog(jacmanFrame, i18n.getString("UpdateDialogTitle"), false, jacmanProperties);
                             upd.postInit();
                         }
                     });
@@ -498,7 +501,7 @@ public class Jacman {
                 public void actionPerformed(ActionEvent evt) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            RemovePackageDialog rpd = new RemovePackageDialog(jacmanFrame, i18n.getString("RemoveDialogTitle"), false, jacmanProperties.getProperties());
+                            RemovePackageDialog rpd = new RemovePackageDialog(jacmanFrame, i18n.getString("RemoveDialogTitle"), false, jacmanProperties);
                             rpd.postInit();
                         }
                     });
@@ -519,7 +522,7 @@ public class Jacman {
                 public void actionPerformed(ActionEvent evt) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            RollbackPackageDialog rpd = new RollbackPackageDialog(jacmanFrame, i18n.getString("RollbackDialogTitle"), false, jacmanProperties.getProperties());
+                            RollbackPackageDialog rpd = new RollbackPackageDialog(jacmanFrame, i18n.getString("RollbackDialogTitle"), false, jacmanProperties);
                          }
                     });
                 }
@@ -623,7 +626,7 @@ public class Jacman {
         	jacmanFrame.setVisible(true);
         
         if (jacmanProperties.getProperty("jacman.enableTray", "true").equals("true")) {
-        	new Tray(jacmanFrame, jacmanProperties.getProperties());
+        	new Tray(jacmanFrame, jacmanProperties);
         }
         
     }
@@ -681,14 +684,16 @@ public class Jacman {
          */
         try {
 
-            PropertiesManager jacmanProperties = PropertiesManager
-                    .getPropertiesManager(URLClassLoader
-                            .getSystemResourceAsStream(JACMAN_PROPERTIES_FILENAME));
-            String useaa = jacmanProperties.getProperty(
-                    "jacman.useAntiAliasText", "true");
-            
-            if (useaa.equals("true")) {
-                System.setProperty("swing.aatext", "true");
+            String useaa = "true";
+            if (new File(System.getProperty("user.home") + File.separator + JACMAN_PROPERTIES_FILENAME).exists()) {
+               
+                Properties jacmanProperties = new Properties();
+                jacmanProperties.load(URLClassLoader.getSystemResourceAsStream(JACMAN_PROPERTIES_FILENAME));
+                useaa = jacmanProperties.getProperty("jacman.useAntiAliasText", "true");
+                
+                if (useaa.equals("true")) {
+                    System.setProperty("swing.aatext", "true");
+                }
             }
         }
         catch (FileNotFoundException e1) {
