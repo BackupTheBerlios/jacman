@@ -19,11 +19,6 @@ package andyr.jacman.utils;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-/*
- * Created on Jun 16, 2005
- *
- */
-
 public class I18nManager {
 
     private static I18nManager man;
