@@ -18,10 +18,8 @@
 package andyr.jacman;
 
 import java.awt.BorderLayout;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -48,7 +46,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
@@ -384,11 +381,6 @@ public class Jacman {
             JMenu viewMenu = new JMenu(i18n.getString("JacmanFrameMenuView"));
             JMenu viewLanguageMenu = new JMenu(i18n.getString("JacmanFrameMenuViewLanguage"));
             viewLanguageMenu.setIcon(JacmanUtils.loadIcon("icons/languages.png"));
-            JMenuItem viewLanguageEnglishMenu = new JMenuItem(i18n.getString("JacmanFrameMenuViewLanguageEnglish"));
-            JMenuItem viewLanguageSpanishMenu = new JMenuItem(i18n.getString("JacmanFrameMenuViewLanguageSpanish"));
-            
-            viewLanguageMenu.add(viewLanguageEnglishMenu);
-            viewLanguageMenu.add(viewLanguageSpanishMenu);
             
             viewMenu.add(new LocaleChanger(getFrame()));
             
@@ -397,10 +389,7 @@ public class Jacman {
             
             JMenu helpMenu = new JMenu(i18n.getString("JacmanFrameMenuHelp"));
 
-            //JMenuItem helpAboutMenuItem = new JMenuItem(i18n.getString("JacmanFrameMenuHelpAbout"), JacmanUtils.loadIcon("icons/about.png"));
             JMenuItem helpAboutMenuItem = new JMenuItem(i18n.getString("JacmanFrameMenuHelpAbout"), JacmanUtils.loadIcon("icons/jacman_logo_small.png"));
-            
-            
             
             helpAboutMenuItem.addActionListener(new ActionListener() {
 
