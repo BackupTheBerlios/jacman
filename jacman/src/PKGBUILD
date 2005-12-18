@@ -1,0 +1,41 @@
+#Contributer Andrew Roberts <dev@andy-roberts.net>
+pkgname=jacman
+pkgver=0.3
+pkgrel=1
+pkgdesc="Java-based GUI front-end for pacman"
+url="http://www.comp.leeds.ac.uk/andyr/software/jacman"
+license="Apache"
+depends=(j2re ttf-ms-fonts)
+makedepends=()
+conflicts=()
+replaces=()
+backup=()
+install=
+source=(http://download.berlios.de/jacman/jacman-0.3.jar)
+md5sums=('07ecf37b34016152afe7d6fc3cf0c5a8')
+
+build() {
+	mkdir -p $startdir/pkg/usr/share/java/jacman $startdir/pkg/usr/share/jacman $startdir/pkg/usr/bin
+	cd $startdir/src
+	mkdir jacman
+	mv jacman-$pkgver.jar jacman
+	cd jacman
+	jar xf jacman-$pkgver.jar
+
+	mv lib/* $startdir/pkg/usr/share/java/jacman
+	rm -rf jacman/lib
+	jar cf jacman-$pkgver.jar *
+	mv jacman-$pkgver.jar $startdir/pkg/usr/share/jacman
+
+	#create the binary
+	cat > $startdir/pkg/usr/bin/jacman <<'EOF'
+#!/bin/sh
+
+CP=/usr/share/jacman/jacman-0.3.jar:/usr/share/java/jacman/looks-1.2.2.jar:/usr/share/java/jacman/glazedlists-1.0.0.jar:/usr/share/java/jacman/l2fprod-common-all.jar:/usr/share/java/jacman/jdic.jar
+
+exec /opt/java/jre/bin/java -cp $CLASSPATH:$CP:. andyr.jacman.Jacman 
+
+EOF
+chmod a+x $startdir/pkg/usr/bin/jacman
+}
+
