@@ -29,6 +29,7 @@ import javax.swing.UIManager;
 import org.jdesktop.jdic.tray.SystemTray;
 import org.jdesktop.jdic.tray.TrayIcon;
 
+import andyr.jacman.console.ConsoleDialog;
 import andyr.jacman.gui.AboutDialog;
 import andyr.jacman.gui.InstallPackageDialog;
 import andyr.jacman.gui.RemovePackageDialog;
@@ -40,7 +41,6 @@ import andyr.jacman.utils.JacmanUtils;
 public class Tray implements ActionListener {
 
 	private SystemTray tray = SystemTray.getDefaultSystemTray();
-	private TrayIcon ti;
 	private JFrame frame;
 	private I18nManager i18n;
     private Properties jacmanProperties;
@@ -71,7 +71,7 @@ public class Tray implements ActionListener {
 			public void actionPerformed(ActionEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						new InstallPackageDialog(null, i18n
+						new InstallPackageDialog(frame, i18n
 								.getString("InstallDialogTitle"), false, jacmanProperties);
 					}
 				});
@@ -88,7 +88,7 @@ public class Tray implements ActionListener {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						UpdatePackagesDialog upd = new UpdatePackagesDialog(
-								null, i18n.getString("UpdateDialogTitle"),
+								frame, i18n.getString("UpdateDialogTitle"),
 								false, jacmanProperties);
 						upd.postInit();
 					}
@@ -105,7 +105,7 @@ public class Tray implements ActionListener {
 			public void actionPerformed(ActionEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						RemovePackageDialog rpd = new RemovePackageDialog(null,
+						RemovePackageDialog rpd = new RemovePackageDialog(frame,
 								i18n.getString("RemoveDialogTitle"), false, jacmanProperties);
 						rpd.postInit();
 					}
@@ -123,13 +123,29 @@ public class Tray implements ActionListener {
 			public void actionPerformed(ActionEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						new RollbackPackageDialog(null, i18n
+						new RollbackPackageDialog(frame, i18n
 								.getString("RollbackDialogTitle"), false, jacmanProperties);
 					}
 				});
 			}
 		});
 		menu.add(rollbackPackages);
+		
+		//OPTIMIZE
+		JMenuItem optimizePackages = new JMenuItem();
+		optimizePackages.setText(i18n.getString("JacmanFrameOptimiseBtn"));
+		optimizePackages.setIcon(JacmanUtils.loadIcon("icons/optimise_16x16.png"));
+		optimizePackages.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        String[] command = {"pacman-optimize"};
+                        new ConsoleDialog(command,frame, i18n.getString("JacmanFrameOptimiseBtn"), true);
+                     }
+                });
+            }
+        });
+		menu.add(optimizePackages);
 
 		// ABOUT
 		//menu.addSeparator();
@@ -149,16 +165,13 @@ public class Tray implements ActionListener {
 		quit.setIcon(JacmanUtils.loadIcon("icons/exit.png"));
 		quit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// if (JOptionPane.showConfirmDialog(null,
-				// "Are you sure you want to quit Jacman ?") ==
-				// JOptionPane.OK_OPTION)
 				System.exit(0);
 			}
 		});
 		menu.add(quit);
 
 		// TRAY ICON
-		ti = new TrayIcon(JacmanUtils.loadIcon("icons/jacman_logo.png"),
+		TrayIcon ti = new TrayIcon(JacmanUtils.loadIcon("icons/jacman_logo.png"),
 				"Jacman", menu);
 		ti.setIconAutoSize(true);
 		ti.addActionListener(this);
