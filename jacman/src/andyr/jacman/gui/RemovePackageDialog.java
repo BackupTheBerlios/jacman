@@ -147,7 +147,8 @@ public class RemovePackageDialog extends JDialog {
         checkableTableFormat = new CheckableTableFormat(new BeanTableFormat(InstalledPacmanPkg.class, propertyNames, columnNames));
         packagesTableModel = new EventTableModel(textFilteredIssues, checkableTableFormat);
         
-        this.setLocation(parent.getLocation());
+        if (parent != null)
+        	this.setLocation(parent.getLocation());
         setupGUI();
         
         final InfiniteProgressPanel pane = new InfiniteProgressPanel(i18n.getString("LoadingPackagesMessage"));

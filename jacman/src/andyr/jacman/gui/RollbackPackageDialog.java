@@ -138,7 +138,8 @@ public class RollbackPackageDialog extends JDialog {
         
         map = new MultiHashMap();
         
-        this.setLocation(parent.getLocation());
+        if (parent != null)
+        	this.setLocation(parent.getLocation());
         setupGUI();
         
         final InfiniteProgressPanel pane = new InfiniteProgressPanel(i18n.getString("LoadingPackagesMessage"));
@@ -445,7 +446,7 @@ public class RollbackPackageDialog extends JDialog {
                 // Use a list iterator so we can go in reverse.
                 for (ListIterator v = versions.listIterator(versions.size()-1); v.hasPrevious();) {
                     
-                    model.addElement((String) v.previous());
+                    model.addElement(v.previous());
                     
                 }
             

@@ -41,7 +41,8 @@ public class AboutDialog extends JDialog {
         i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
         setupGUI();
         this.pack();
-        this.setLocationRelativeTo(parent);
+        if (parent != null)
+        	this.setLocationRelativeTo(parent);
         this.setVisible(true);
     }
     
