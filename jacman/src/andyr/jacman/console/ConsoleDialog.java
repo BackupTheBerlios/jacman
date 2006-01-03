@@ -18,6 +18,7 @@ package andyr.jacman.console;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -35,6 +36,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -45,7 +47,7 @@ import andyr.jacman.utils.I18nManager;
 
 /*
  * Created on Jun 19, 2005
- *
+ * 
  */
 public class ConsoleDialog extends JDialog {
 
@@ -53,22 +55,46 @@ public class ConsoleDialog extends JDialog {
 	private JPanel mainContent;
 	private JButton noButton;
 	private JButton yesButton;
+	//private JButton abortButton;
 	private JTextPane console;
 	private JButton btnCloseDialog;
 	private ConsoleBufferVO consoleBufferVO;
 	private I18nManager i18n;
+	
+	//default colours
+	private Color foreground = Color.WHITE; // regular text colour
+	private Color background = Color.BLACK;
+	private Color textBackground = background;;
+	private Color errorForeground = Color.RED;
+	private Color errorTextBackground = background;
+	//default colours for console escape colours (used with iLoveCandy)
+	//*** the "pacman" is yellow
+	//*** the "dots" are white
+	private Color yellowEscapeColor = Color.YELLOW;
+	private Color whiteEscapeColor = Color.WHITE; // this has to be a dark colour if the console background is white
+	//default font
+	private Font font = new Font("Monospaced", Font.PLAIN, 10);
 
-	// TODO Make code reusable and pretty
-
-    public ConsoleDialog(String[] command, Dialog owner, String title,
+	// constructor for dialog parents
+	public ConsoleDialog(String[] command, Dialog owner, String title,
 			boolean modal) throws HeadlessException {
 		super(owner, title, modal);
-        
+		setUpConsoleDialog(command, owner);
+	}
 
+	// constructor for frame parents
+	public ConsoleDialog(String[] command, Frame owner, String title,
+			boolean modal) throws HeadlessException {
+		super(owner, title, modal);
+		setUpConsoleDialog(command, owner);
+	}
+
+	private void setUpConsoleDialog(String[] command, Component owner) {
 		i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale
 				.getDefault());
 		setupGUI();
-        setLocationRelativeTo(owner);
+		if (owner != null)
+			setLocationRelativeTo(owner);
 		final String cmd[] = command;
 		final SwingWorker worker = new SwingWorker() {
 			@Override
@@ -80,51 +106,57 @@ public class ConsoleDialog extends JDialog {
 		worker.start();
 		setVisible(true);
 	}
+	
+	public void setConsoleForeground(Color color){
+		console.setForeground(color);
+	}
+	public void setConsoleBackground(Color color){
+		console.setBackground(color);
+	}
+	public void setConsoleTextBackground(Color color){
+		this.textBackground = color;
+	}
+	public void setConsoleErrorForeground(Color color){
+		this.errorForeground = color;
+	}
+	public void setConsoleErrorTextBackground(Color color){
+		this.errorTextBackground = color;
+	}
+	public void setConsoleFont(Font font){
+		console.setFont(font);
+	}
+	public void setYellowEscape(Color color){
+		this.yellowEscapeColor = color;
+	}
+	public void setWhiteEscape(Color color){
+		this.whiteEscapeColor = color;
+	}
+	
 
-    public ConsoleDialog(String[] command, Frame owner, String title,
-            boolean modal) throws HeadlessException {
-    
-        // TODO This is constructor is a quick hack! Perhaps Jon-Anders
-        // can tidy this class up overall.
-        
-        super(owner, title, modal);
-        i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale
-                .getDefault());
-        setupGUI();
-        setLocationRelativeTo(owner);
-        final String cmd[] = command;
-        final SwingWorker worker = new SwingWorker() {
-            @Override
-            public Object construct() {
-                runCommand(cmd);
-                return "done";
-            }
-        };
-        worker.start();
-        setVisible(true);
-    }
- 
-	public JPanel getConsolePanel() {
+	private JPanel getConsolePanel() {
 
 		if (consolePanel == null) {
 			consolePanel = new JPanel(new BorderLayout());
-			console = new JTextPane();
-			console.setEditable(false);
-			console.setFont(new Font("Monospaced", Font.PLAIN, 10));
+			this.console = new JTextPane();
+			this.console.setEditable(false);
+			this.setConsoleFont(font);
 			JScrollPane scroll = new JScrollPane(console);
 			scroll.setPreferredSize(new Dimension(500, 200));
 			consolePanel.add(scroll);
+			this.setConsoleForeground(foreground);
+			this.setConsoleBackground(background);
 		}
 
 		return consolePanel;
 	}
 
-	public JPanel getMainContent() {
+	private JPanel getMainContent() {
 
 		if (mainContent == null) {
 			mainContent = new JPanel(new BorderLayout());
-            JLabel lblConsoleOutput = new JLabel(i18n.getString("ConsoleDialogLblOutput"));
-            lblConsoleOutput.setBorder(new EmptyBorder(3,3,3,3));
+			JLabel lblConsoleOutput = new JLabel(i18n
+					.getString("ConsoleDialogLblOutput"));
+			lblConsoleOutput.setBorder(new EmptyBorder(3, 3, 3, 3));
 			mainContent.add(lblConsoleOutput, BorderLayout.NORTH);
 			mainContent.add(getConsolePanel(), BorderLayout.CENTER);
 
@@ -137,7 +169,9 @@ public class ConsoleDialog extends JDialog {
 			});
 			initYesButton();
 			initNoButton();
+			//initAbortButton();
 			JPanel buttonPanel = new JPanel();
+			//buttonPanel.add(abortButton);
 			buttonPanel.add(btnCloseDialog);
 			buttonPanel.add(yesButton);
 			buttonPanel.add(noButton);
@@ -181,7 +215,7 @@ public class ConsoleDialog extends JDialog {
 		noButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					consoleBufferVO.getBufferedWriter().write("n"); // say no to
+					consoleBufferVO.getBufferedWriter().write("n"); // say no
 					consoleBufferVO.getBufferedWriter().write("\n");// hit enter
 					consoleBufferVO.getBufferedWriter().flush(); // flush,
 				} catch (IOException ioe) {
@@ -204,6 +238,7 @@ public class ConsoleDialog extends JDialog {
 		new Thread() {
 			@Override
 			public void run() {
+				// the different escape character sequences
 				String yellowEscape = new String(new char[] { 27, '[', '1',
 						';', '3', '3', 'm' });
 				String whiteEscape = new String(new char[] { 27, '[', '0', ';',
@@ -211,34 +246,73 @@ public class ConsoleDialog extends JDialog {
 				String noEscape = new String(new char[] { 27, '[', 'm' });
 				boolean escape = false;
 				int tmp;
-				StyledDocument doc = console.getStyledDocument();
+				// create the document for the console
+				DefaultStyledDocument doc = new DefaultStyledDocument();
+				console.setDocument(doc);
+
 				MutableAttributeSet keyword = new SimpleAttributeSet();
-				StyleConstants.setForeground(keyword, Color.BLACK);
+				// text colour
+				StyleConstants.setForeground(keyword, foreground);
+				// text background colour
+				StyleConstants.setBackground(keyword,textBackground);
+				
+				//some variables needed to know where in the document to insert/replace text
 				int offset = doc.getLength();
 				int preOffset = offset;
 				StringBuilder escCode = new StringBuilder();
 				try {
 					while ((tmp = consoleBufferVO.getBufferedReader().read()) != -1) {
-						if (27 == tmp)
+						//27 is the escape character indicating the start of an escape sequence
+						if (27 == tmp) {
 							escape = true;
-						if (escape)
+						}
+						// if we are in an escape sequence - add the char to the escapesequencebuffer
+						if (escape) {
 							escCode.append((char) tmp);
-						else {
+							// m marks the end of an escape sequence - lets compare it to known escape sequences
+							if ('m' == tmp) {
+								String esc = escCode.toString();
+								if (esc.equals(yellowEscape)) {
+									StyleConstants.setForeground(keyword,
+											yellowEscapeColor);
+								} else if (esc.equals(whiteEscape)) {
+									StyleConstants.setForeground(keyword,
+											whiteEscapeColor);
+								} else if (esc.equals(noEscape)) {
+									StyleConstants.setForeground(keyword,
+											foreground);
+								}
+								// empty the escape code sequence buffer, and flag that we are no longer reading an escape code sequence
+								escCode.delete(0, escCode.length());
+								escape = false;
+							}
+						} else {
+							// handle new line
 							if ('\n' == tmp) {
 								offset = doc.getLength();
-								preOffset = offset + 1;
-							}
-							if ('\r' == tmp)
+								doc.insertString(offset, "\n", keyword);
+								offset++;
+								preOffset = offset;
+							} 
+							//handle carriage return
+							else if ('\r' == tmp) {
 								offset = preOffset;
-							else {
+							} else {
+								// replace character if we are in the document
 								if (offset < doc.getLength()) {
-									doc.remove(offset, 1);
+									doc.replace(offset, 1, Character
+											.toString((char) tmp), keyword);
+								} 
+								// or else, insert string at the end if the document 
+								else {
+									doc.insertString(offset, Character
+											.toString((char) tmp), keyword);
 								}
-								doc.insertString(offset, "" + (char) tmp,
-										keyword);
+								// update navigation variables
 								offset++;
 								console.setCaretPosition(preOffset);
 							}
+							// enable yes/no buttons if pacman wants us to answer yes/no to a question
 							if (console.getText().endsWith("[Y/n] ")) {
 								setYesNoEnabled(true);
 								doc.insertString(offset, "\n", keyword);
@@ -246,31 +320,12 @@ public class ConsoleDialog extends JDialog {
 								preOffset = offset;
 							}
 						}
-						if (escape) {
-							if ('m' == tmp) {
-								String esc = escCode.toString();
-								if (esc.equals(yellowEscape)) {
-									StyleConstants.setForeground(keyword,
-											Color.YELLOW);
-									escCode.delete(0, escCode.length());
-								} else if (esc.equals(whiteEscape)) {
-									StyleConstants.setForeground(keyword,
-											Color.GRAY);
-									escCode.delete(0, escCode.length());
-								} else if (esc.equals(noEscape)) {
-									StyleConstants.setForeground(keyword,
-											Color.BLACK);
-									escCode.delete(0, escCode.length());
-								}
-								escape = false;
-							}
-						}
-					}
+					} // end while loop
+					// close the stream
 					consoleBufferVO.getBufferedReader().close();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				//System.out.println("PACMAN STD_OUT DONE");
 				btnCloseDialog.setEnabled(true);
 			}
 		}.start();
@@ -280,19 +335,19 @@ public class ConsoleDialog extends JDialog {
 			public void run() {
 				StyledDocument doc = console.getStyledDocument();
 				MutableAttributeSet errorStdOut = new SimpleAttributeSet();
-				StyleConstants.setForeground(errorStdOut, Color.RED);
+				StyleConstants.setForeground(errorStdOut, errorForeground);
+				StyleConstants.setBackground(errorStdOut,errorTextBackground);
 				int tmp;
 				try {
 					while ((tmp = consoleBufferVO.getBufferedErrorReader()
 							.read()) != -1) {
-						doc.insertString(doc.getLength(), "" + (char) tmp,
-								errorStdOut);
+						doc.insertString(doc.getLength(), Character
+								.toString((char) tmp), errorStdOut);
 					}
 					consoleBufferVO.getBufferedErrorReader().close();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				//System.out.println("PACMAN ERR_OUT DONE");
 			}
 		}.start();
 	}
