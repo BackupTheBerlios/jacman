@@ -65,10 +65,10 @@ public class AboutDialog extends JDialog {
         acks.append("&nbsp;&nbsp;Dusty Phillips (Dusty)" + "<br>");
         acks.append("&nbsp;&nbsp;John Lipsky" + "<br>");
         acks.append("<br>" + i18n.getString("AboutDialogTranslations") + "<br>");
-        acks.append("&nbsp;&nbsp;" + i18n.getString("LanguageSpanish") + ": Leonardo Gallego (Sud_crow)" + "<br>");
+        //acks.append("&nbsp;&nbsp;" + i18n.getString("LanguageSpanish") + ": Leonardo Gallego (Sud_crow)" + "<br>");
         acks.append("&nbsp;&nbsp;" + i18n.getString("LanguagePolish") + ": Piotr Mali\u0144ski (Riklaunim)" + "<br>");
-        acks.append("&nbsp;&nbsp;" + i18n.getString("LanguageSwedish") + ": Jens Persson (Xerces2)" + "<br>");
-        acks.append("&nbsp;&nbsp;" + i18n.getString("LanguageGreek") + ": Stavros Griannouris (Stavrosg)" + "<br>");
+        //acks.append("&nbsp;&nbsp;" + i18n.getString("LanguageSwedish") + ": Jens Persson (Xerces2)" + "<br>");
+        //acks.append("&nbsp;&nbsp;" + i18n.getString("LanguageGreek") + ": Stavros Griannouris (Stavrosg)" + "<br>");
         acks.append("</html>");
         JLabel lblAck = new JLabel(acks.toString());
         lblAck.setBorder(new EmptyBorder(6,12,6,6));
