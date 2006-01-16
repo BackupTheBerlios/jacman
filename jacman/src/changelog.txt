@@ -2,6 +2,7 @@ Version 0.1 (25-06-05)
  - Initial release
  
 Version 0.2 (25-06-05)
+ - Licnse changed to Apache2.
  - Added jacman.disposeMainMenu property. When true, if pacman is run within the Install/
    Remove/Update dialogs, when the Done button is clicked, Jacman closes. Otherwise, closing
    the dialog will take you back to the main menu.
@@ -18,20 +19,18 @@ Version 0.2 (25-06-05)
  - Added acknowledgements to Jon-Anders (soniX) and added proper name for Sudman1.
  - Added i18n support for ConsoleDialog.
  - Added "rollback" package support.
-
- - Console dialog supports ILoveCandy option.
  
- Version 0.3
-  - Added multi-lingual support that enables the user to switch the language used in the
-    Jacman GUI. Various languages such as Chinese, Spanish, Swedish and Polish are included.
+ Version 0.3 (16-01-06)
+  - Added simple multi-lingual support that enables the user to switch the language used in the
+    Jacman GUI. Only English and Polish are included at the moment (more to follow).
   - Added a Preferences dialog box to allow user-specific settings. This avoids manual editing
     of Jacman.properties file.
   - Added button on main menu to initiate the Pacman-Optimize functionality.
-  - Added acknowledgements to all translation contributors.
+  - Added acknowledgements to translation contributors.
   - All source files now has the license information in its preamble.
-  - Updated the l2fprod-common-sheet.jar to its latest version.=======
- - Console dialog supports ILoveCandy option.
- 
- Version 0.3 (pending)
- - Console is improved. It now supports carriage return and ILoveCandy colour codes. Errors are printed in red.
- - Added support for tray. Tray supports  >>>>>>> 1.6
+  - Updated the l2fprod-common-all.jar to its latest version.
+  - Updated the GlazedLists library to 1.0.
+  - Console dialog supports ILoveCandy option.
+  - Console improved to display pacman output more smoothly (reduces flicker).
+  - Added provisional support for tray. It's VERY experimental. 
+  - build.xml for building Jacman with ant has been updated.
