@@ -114,41 +114,53 @@ public class Jacman {
 
     public Jacman(File confPath) {
         
-        if (!initUserPrefsDirectory()) {
-            System.err.println("Can't create user directory. Haven't written code to cope with this yet, therefore I will abort. Sorry!");
-        }
-        
-        try {
-            
-            loadProperties();
-            
-        }
-        catch (FileNotFoundException e1) {
-            System.err.println("Could not find " + JACMAN_PROPERTIES_FILENAME + "configuration file. Using built-in defaults instead.");
-            
-        }
-        catch (IOException e1) {
-            System.err.println("An error occurred when trying to load" + JACMAN_PROPERTIES_FILENAME + ". Using built-in defaults instead.");
-            e1.printStackTrace();
-        }
-        
+            if (!initUserPrefsDirectory()) {
+                System.err
+                        .println("Can't create user directory. Haven't written code to cope with this yet, therefore I will abort. Sorry!");
+            }
 
-        try {
-            pacmanConf = new PacmanConf(confPath);
-            
-        } catch (FileNotFoundException e) {
-            System.err.println("Couldn't load pacman.conf. Exiting.");
-            System.exit(1);
-        } catch (IOException e) {
-            System.err.println("Error reading pacman.conf:");
-            System.err.println (e);
-            System.err.println("Exiting.");
-        }
+            try {
+
+                loadProperties();
+                
+                Locale.setDefault(new Locale(jacmanProperties.getProperty("jacman.language", "en_US")));
+
+            }
+            catch (FileNotFoundException e1) {
+                System.err
+                        .println("Could not find "
+                                + JACMAN_PROPERTIES_FILENAME
+                                + "configuration file. Using built-in defaults instead.");
+
+            }
+            catch (IOException e1) {
+                System.err.println("An error occurred when trying to load"
+                        + JACMAN_PROPERTIES_FILENAME
+                        + ". Using built-in defaults instead.");
+                e1.printStackTrace();
+            }
+
+            try {
+                pacmanConf = new PacmanConf(confPath);
+
+            }
+            catch (FileNotFoundException e) {
+                System.err.println("Couldn't load pacman.conf. Exiting.");
+                System.exit(1);
+            }
+            catch (IOException e) {
+                System.err.println("Error reading pacman.conf:");
+                System.err.println(e);
+                System.err.println("Exiting.");
+            }
+        
+        
+        i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
     }
     
     private void loadProperties() throws FileNotFoundException, IOException {
         
-        i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
+        //i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
         System.out.println(System.getProperty("user.home") + File.separator + JACMAN_PREFS_DIR + File.separator + JACMAN_PROPERTIES_FILENAME);
         jacmanProperties = new Properties();
         jacmanProperties.load(new FileInputStream(System.getProperty("user.home") + File.separator + JACMAN_PREFS_DIR + File.separator + JACMAN_PROPERTIES_FILENAME)); 
@@ -415,6 +427,7 @@ public class Jacman {
             
             File out = new File(System.getProperty("user.home") + File.separator + JACMAN_PREFS_DIR + File.separator + JACMAN_PROPERTIES_FILENAME);
             
+            jacmanProperties.put("jacman.language", Locale.getDefault().getLanguage());
             jacmanProperties.store(new FileOutputStream(out), "Jacman user properties");
         }
         catch (FileNotFoundException e) {
@@ -622,11 +635,10 @@ public class Jacman {
             MoveResizeGlassPane.registerFrame(jacmanFrame);
         }   
         
-        if (jacmanProperties.getProperty("jacman.startHiddenInTray", "false").equals("false"))
-        	jacmanFrame.setVisible(true);
-        
         if (jacmanProperties.getProperty("jacman.enableTray", "true").equals("true")) {
         	new Tray(jacmanFrame, jacmanProperties);
+            if (jacmanProperties.getProperty("jacman.startHiddenInTray", "false").equals("false"))
+                jacmanFrame.setVisible(true);
         }
         
     }
@@ -682,9 +694,11 @@ public class Jacman {
          * properties file before using any Swing classes and then set the Swing
          * aatext property accordingly.
          */
+        
         try {
 
             String useaa = "true";
+            
             if (new File(System.getProperty("user.home") + File.separator + JACMAN_PROPERTIES_FILENAME).exists()) {
                
                 Properties jacmanProperties = new Properties();
@@ -753,7 +767,10 @@ public class Jacman {
                 }
 
                 jm.createGUI();
+                //if (jacmanProperties.getProperty("jacman.startHiddenInTray", "false").equals("false"))
                 jm.setVisible(true);
+                
+                
             }
         });
 
