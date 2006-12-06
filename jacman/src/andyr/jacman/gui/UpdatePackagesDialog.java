@@ -50,6 +50,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
 import andyr.jacman.InstallListFilter;
 import andyr.jacman.InstalledPacmanPkg;
@@ -90,10 +92,13 @@ public class UpdatePackagesDialog extends JDialog {
 	private JLabel size = new JLabel();
 
 	private EventList packageEventList = new BasicEventList();
+    EventList installedPackages;
 	private SortedList sortedPackages;
 	private EventTableModel packagesTableModel;
 
 	private CheckableTableFormat checkableTableFormat;
+    
+    private PackageColourProvider packageColourProvider;
 
 	private I18nManager i18n;
 	private Properties jacmanProperties;
@@ -116,13 +121,21 @@ public class UpdatePackagesDialog extends JDialog {
 				new TextComponentMatcherEditor(txtSearch,
 						new PackageTextFilterator()));
 
-		String[] propertyNames = { "name", "version", "description", "size" };
+		/*String[] propertyNames = { "name", "version", "description", "size" };
 
 		String[] columnNames = { i18n.getString("PackageTableColumnName"),
 				i18n.getString("PackageTableColumnInstalledVer"),
 				i18n.getString("PackageTableColumnDescription"),
 				i18n.getString("PackageTableColumnSize") };
-
+*/
+        String[] propertyNames = { "name", "installedVersion", "version",
+                "description", "size" };
+        String[] columnNames = { i18n.getString("PackageTableColumnName"),
+                i18n.getString("PackageTableColumnInstalledVer"),
+                i18n.getString("PackageTableColumnAvailableVer"),
+                i18n.getString("PackageTableColumnDescription"),
+                i18n.getString("PackageTableColumnSize") };
+        
 		checkableTableFormat = new CheckableTableFormat(new BeanTableFormat(
 				InstalledPacmanPkg.class, propertyNames, columnNames));
 		packagesTableModel = new EventTableModel(textFilteredIssues,
@@ -140,8 +153,11 @@ public class UpdatePackagesDialog extends JDialog {
 		pane.start();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
-
-				Jacman.findInstalledPackages(packageEventList);
+                installedPackages = new BasicEventList();
+                Jacman.findInstalledPackages(installedPackages);
+                Jacman.findInstalledForUpdatePackages(packageEventList,
+                        installedPackages);
+				//Jacman.findInstalledPackages(packageEventList);
 				return "done";
 			}
 
@@ -380,6 +396,7 @@ public class UpdatePackagesDialog extends JDialog {
 		buttonPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
 		JButton updateButton = new JButton(i18n
 				.getString("UpdateDialogUpdateButton"));
+        updateButton.setIcon(JacmanUtils.loadIcon("icons/button_ok_16x16.png"));
 		updateButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -423,6 +440,7 @@ public class UpdatePackagesDialog extends JDialog {
 		buttonPanel.add(updateButton);
 
 		JButton closeButton = new JButton(i18n.getString("CloseButton"));
+        closeButton.setIcon(JacmanUtils.loadIcon("icons/button_cancel_16x16.png"));
 		closeButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -528,32 +546,45 @@ public class UpdatePackagesDialog extends JDialog {
 								.getValueAt(selectedRow, (tblPackageList
 										.getColumnModel().getColumn(1))
 										.getModelIndex());
+                        
 						updateDescriptionPanel(currentPackage);
 
 					}
 				}
 
 			});
+            packageColourProvider = new PackageColourProvider(packagesTableModel);
+            registerRenderForClass(tblPackageList, String.class);
 
 		}
 		return tblPackageList;
 	}
+    
+    private void registerRenderForClass(JTable table, Class klass) {
+        
+        DefaultTableCellRenderer defaultRenderer = (DefaultTableCellRenderer) table.getDefaultRenderer(klass);
+        
+        TableCellRenderer colourRenderer = new ColourRenderer(defaultRenderer, packageColourProvider);
+        
+        
+        table.setDefaultRenderer(klass, colourRenderer);
+    }
 
 	private void updateDescriptionPanel(String pkgName) {
 		if (!pkgName.trim().equals("")) {
 			// Get the package from the package list and update the labels
 			// accordingly.
-			InstalledPacmanPkg tmpPkg = new InstalledPacmanPkg();
+			PacmanPkg tmpPkg = new PacmanPkg();
 			tmpPkg.setName(pkgName);
 			int index = Collections.binarySearch(packageEventList, tmpPkg,
 					new PackageNameComparitor());
 			if (index >= 0) {
-				InstalledPacmanPkg p = (InstalledPacmanPkg) packageEventList
+				PacmanPkg p = (PacmanPkg) packageEventList
 						.get(index);
 
 				packageName.setText(p.getName());
 				packageDesc.setText(p.getDescription());
-				installedVersion.setText(p.getVersion());
+				installedVersion.setText(p.getInstalledVersion());
 				size.setText(Long.toString(p.getSize()));
 
 			} else {
