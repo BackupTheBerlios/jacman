@@ -110,11 +110,11 @@ public class PacmanConf {
         }
     }
 
-    public List getRepositories() {
+    public List<String> getRepositories() {
         return repositories;
     }
 
-    public List getIgnorePackages() {
+    public List<String> getIgnorePackages() {
         return ignorePackages;
     }
 
