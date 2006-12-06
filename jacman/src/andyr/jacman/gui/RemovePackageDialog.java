@@ -372,6 +372,7 @@ public class RemovePackageDialog extends JDialog {
         JPanel buttonPanel = new JPanel(new EqualsLayout(EqualsLayout.HORIZONTAL, EqualsLayout.RIGHT, 3));
         buttonPanel.setBorder(new EmptyBorder(3,3,3,3));
         JButton removeButton = new JButton(i18n.getString("RemoveDialogRemoveButton"));
+        removeButton.setIcon(JacmanUtils.loadIcon("icons/button_ok_16x16.png"));
         removeButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -409,6 +410,7 @@ public class RemovePackageDialog extends JDialog {
         buttonPanel.add(removeButton);
         
         JButton closeButton = new JButton(i18n.getString("CloseButton"));
+        closeButton.setIcon(JacmanUtils.loadIcon("icons/button_cancel_16x16.png"));
         closeButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
