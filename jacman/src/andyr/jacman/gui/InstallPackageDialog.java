@@ -55,13 +55,15 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 
-import andyr.jacman.InstallListFilter;
 import andyr.jacman.InstallOptions;
 import andyr.jacman.Jacman;
+import andyr.jacman.ListFilterEditor;
 import andyr.jacman.PackageComparitor;
 import andyr.jacman.PackageNameComparitor;
 import andyr.jacman.PacmanPkg;
@@ -118,12 +120,14 @@ public class InstallPackageDialog extends JDialog {
 	private JLabel size = new JLabel();
 	private JLabel md5sum = new JLabel();
 
-	private EventList packageEventList = new BasicEventList();
-	private SortedList sortedPackages;
+	private EventList<PacmanPkg> packageEventList = new BasicEventList<PacmanPkg>();
+	private SortedList<PacmanPkg> sortedPackages;
 	private EventTableModel packagesTableModel;
-	private InstallListFilter installListFiltered;
+	private ListFilterEditor installListFiltered;
 
 	private CheckableTableFormat checkableTableFormat;
+    
+    private PackageColourProvider packageColourProvider;
 
 	private I18nManager i18n;
 	private Properties jacmanProperties;
@@ -139,13 +143,29 @@ public class InstallPackageDialog extends JDialog {
 		i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale
 				.getDefault());
 
-		installListFiltered = new InstallListFilter(packageEventList);
-		sortedPackages = new SortedList(packageEventList,
-				new PackageComparitor());
-		FilterList textFilteredIssues = new FilterList(sortedPackages,
-				new TextComponentMatcherEditor(txtSearch,
-						new PackageTextFilterator()));
+		
 
+        
+        installListFiltered = new ListFilterEditor();
+        sortedPackages = new SortedList<PacmanPkg>(packageEventList,
+                new PackageComparitor());
+
+        FilterList<PacmanPkg> listFilteredIssues = new FilterList<PacmanPkg>(sortedPackages, installListFiltered);
+        
+        FilterList<PacmanPkg> textFilteredIssues = new FilterList<PacmanPkg>(listFilteredIssues,
+                new TextComponentMatcherEditor(txtSearch,
+                        new PackageTextFilterator()));
+         
+        /*
+          installListFiltered = new InstallListFilter(packageEventList);
+        sortedPackages = new SortedList<PacmanPkg>(packageEventList,
+                new PackageComparitor());
+
+        
+        FilterList<PacmanPkg> textFilteredIssues = new FilterList<PacmanPkg>(sortedPackages,
+                new TextComponentMatcherEditor(txtSearch,
+                        new PackageTextFilterator()));
+        */
 		String[] propertyNames = { "name", "installedVersion", "version",
 				"description", "repository", "size" };
 		String[] columnNames = { i18n.getString("PackageTableColumnName"),
@@ -192,7 +212,7 @@ public class InstallPackageDialog extends JDialog {
 		if (pnlPackageFilter == null) {
 			pnlPackageFilter = new JPanel(new BorderLayout());
 			pnlPackageFilter.add(new JScrollPane(installListFiltered
-					.getUserSelect()), BorderLayout.CENTER);
+					.getFilterSelect()), BorderLayout.CENTER);
 		}
 
 		return pnlPackageFilter;
@@ -470,6 +490,7 @@ public class InstallPackageDialog extends JDialog {
 		buttonPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
 		JButton installButton = new JButton(i18n
 				.getString("InstallDialogInstallButton"));
+        installButton.setIcon(JacmanUtils.loadIcon("icons/button_ok_16x16.png"));
 		installButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -511,6 +532,7 @@ public class InstallPackageDialog extends JDialog {
 		buttonPanel.add(installButton);
 
 		JButton closeButton = new JButton(i18n.getString("CloseButton"));
+        closeButton.setIcon(JacmanUtils.loadIcon("icons/button_cancel_16x16.png"));
 		closeButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -631,7 +653,10 @@ public class InstallPackageDialog extends JDialog {
 
 			});
 
+            packageColourProvider = new PackageColourProvider(packagesTableModel);
+            registerRenderForClass(tblPackageList, String.class);
 		}
+        
 		return tblPackageList;
 	}
 
@@ -703,6 +728,16 @@ public class InstallPackageDialog extends JDialog {
 
 		return returnVal;
 	}
+    
+    private void registerRenderForClass(JTable table, Class klass) {
+         
+        DefaultTableCellRenderer defaultRenderer = (DefaultTableCellRenderer) table.getDefaultRenderer(klass);
+        
+        TableCellRenderer colourRenderer = new ColourRenderer(defaultRenderer, packageColourProvider);
+        
+        
+        table.setDefaultRenderer(klass, colourRenderer);
+    }
 
 	class DependsTreeCellRenderer extends JLabel implements TreeCellRenderer {
 
