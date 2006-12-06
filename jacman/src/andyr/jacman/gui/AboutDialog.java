@@ -30,6 +30,7 @@ import javax.swing.border.EmptyBorder;
 
 import andyr.jacman.Jacman;
 import andyr.jacman.utils.I18nManager;
+import andyr.jacman.utils.JacmanUtils;
 
 public class AboutDialog extends JDialog {
     
@@ -75,6 +76,7 @@ public class AboutDialog extends JDialog {
         aboutPanel.add(lblAck, BorderLayout.CENTER);
         
         JButton okButton = new JButton(i18n.getString("OKButton"));
+        okButton.setIcon(JacmanUtils.loadIcon("icons/button_ok_16x16.png"));
         okButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
