@@ -36,11 +36,13 @@ import ca.odell.glazedlists.swing.EventSelectionModel;
 public class InstallListFilter extends AbstractMatcherEditor implements ListSelectionListener {
 
     /** a list of users */
-    private EventList packagesEventList;
+    private EventList<String> packagesEventList;
     private EventList packagesSelectedList;
 
+    private EventSelectionModel<String> userSelectionModel;
+    
     /** a widget for selecting users */
-    private JList userSelect;
+    private JList filterSelect;
     
     private I18nManager i18n;
 
@@ -48,44 +50,48 @@ public class InstallListFilter extends AbstractMatcherEditor implements ListSele
      * Create a filter list that filters the specified source list, which
      * must contain only Issue objects.
      */
-    public InstallListFilter(EventList source) {
+    public InstallListFilter() {
         //super(source);
 
         i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
         
-        List<String> filterItems = new ArrayList<String>();
-        filterItems.add(i18n.getString("FilterAll"));
-        filterItems.add(i18n.getString("FilterNotInstalled"));
+        //List<String> filterItems = new ArrayList<String>();
+        //filterItems.add(i18n.getString("FilterAll"));
+        //filterItems.add(i18n.getString("FilterNotInstalled"));
         
-        // create a unique users list from the source issues list
-        //usersEventList = new UniqueList(new CollectionList(source, new IssueUserator()));
-        packagesEventList = new BasicEventList(filterItems);
+        
+        packagesEventList = new BasicEventList<String>();
+        packagesEventList.add(i18n.getString("FilterAll"));
+        packagesEventList.add(i18n.getString("FilterNotInstalled"));
+        
         // create a JList that contains users
-        EventListModel usersListModel = new EventListModel(packagesEventList);
-        userSelect = new JList(usersListModel);
+        EventListModel<String> usersListModel = new EventListModel<String>(packagesEventList);
+        filterSelect = new JList(usersListModel);
 
         // create an EventList containing the JList's selection
-        EventSelectionModel userSelectionModel = new EventSelectionModel(packagesEventList);
-        userSelect.setSelectionModel(userSelectionModel);
-        packagesSelectedList = userSelectionModel.getSelected();
-        userSelect.addListSelectionListener(this);
+        userSelectionModel = new EventSelectionModel<String>(packagesEventList);
+        filterSelect.setSelectionModel(userSelectionModel);
+        
+        filterSelect.addListSelectionListener(this);
 
         //handleFilterChanged();
     }
+    
+    
 
     /**
-     * Get the widget for selecting users.
+     * Get the widget for selecting filter contraints.
      */
-    public JList getUserSelect() {
-        userSelect.setSelectedIndex(0);
-        return userSelect;
+    public JList getFilterSelect() {
+        //userSelect.setSelectedIndex(0);
+        return filterSelect;
     }
 
     /**
      * When the JList selection changes, refilter.
      */
     public void valueChanged(ListSelectionEvent e) {
-        //handleFilterChanged();
+        packagesSelectedList = userSelectionModel.getSelected();
         Matcher newMatcher = new InstallMatcher(packagesSelectedList);
         fireChanged(newMatcher);
     }
