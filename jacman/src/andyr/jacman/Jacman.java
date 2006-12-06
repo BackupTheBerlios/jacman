@@ -54,11 +54,13 @@ import javax.swing.JSeparator;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.apache.commons.collections.MultiHashMap;
+import org.jvnet.substance.skin.SubstanceCremeLookAndFeel;
 
 import andyr.jacman.console.ConsoleDialog;
 import andyr.jacman.gui.AboutDialog;
@@ -103,7 +105,7 @@ public class Jacman {
 
     public final static String JACMAN_PREFS_DIR = ".jacman";
     public final static String JACMAN_NAME = "Jacman";
-    public final static String JACMAN_VERSION_NUMBER = "0.3";
+    public final static String JACMAN_VERSION_NUMBER = "0.4";
     public final static String JACMAN_DEV = "Andrew Roberts";
     public final static String JACMAN_URL = "http://www.andy-roberts.net/software/jacman/";
     
@@ -142,6 +144,7 @@ public class Jacman {
 
             try {
                 pacmanConf = new PacmanConf(confPath);
+                System.out.println(pacmanConf.toString());
 
             }
             catch (FileNotFoundException e) {
@@ -161,7 +164,7 @@ public class Jacman {
     private void loadProperties() throws FileNotFoundException, IOException {
         
         //i18n = I18nManager.getI18nManager("i18n/JacmanLabels", Locale.getDefault());
-        System.out.println(System.getProperty("user.home") + File.separator + JACMAN_PREFS_DIR + File.separator + JACMAN_PROPERTIES_FILENAME);
+        //System.out.println(System.getProperty("user.home") + File.separator + JACMAN_PREFS_DIR + File.separator + JACMAN_PROPERTIES_FILENAME);
         jacmanProperties = new Properties();
         jacmanProperties.load(new FileInputStream(System.getProperty("user.home") + File.separator + JACMAN_PREFS_DIR + File.separator + JACMAN_PROPERTIES_FILENAME)); 
         
@@ -186,7 +189,8 @@ public class Jacman {
                 
                 // Save the default properties file to this dir
                 try {
-                    JacmanUtils.copyFile(JACMAN_PROPERTIES_FILENAME, jacmanUserPrefs.getPath() + File.separator + JACMAN_PROPERTIES_FILENAME);
+                    getDefaultProperties().store(new FileOutputStream(jacmanUserPrefs.getPath() + File.separator + JACMAN_PROPERTIES_FILENAME), "Jacman user properties");
+                    //JacmanUtils.copyFile(JACMAN_PROPERTIES_FILENAME, jacmanUserPrefs.getPath() + File.separator + JACMAN_PROPERTIES_FILENAME);
                     //System.out.println("~/.jacman/" + JACMAN_PROPERTIES_FILENAME + " created.");
                     // if all went well, set ready to true
                     ready = true;
@@ -213,6 +217,19 @@ public class Jacman {
         }
         
         return ready;
+    }
+    
+    private Properties getDefaultProperties() {
+        
+        Properties defaultProperties = new Properties();
+        
+        defaultProperties.setProperty("jacman.showWindowInfo", "false");
+        defaultProperties.setProperty("jacman.useAntiAliasText", "true");
+        defaultProperties.setProperty("jacman.disposeMainMenu", "false");
+        defaultProperties.setProperty("jacman.jacman.enableTray", "false");
+        defaultProperties.setProperty("jacman.startHiddenInTray", "false");
+        
+        return defaultProperties;
     }
    
     public static void findAvailablePackages(EventList availablePkgList, EventList installedPackages) {
@@ -268,6 +285,49 @@ public class Jacman {
         }
     };
     
+    public static void findInstalledForUpdatePackages(EventList availablePkgList, EventList installedPackages) {
+        File dbPath = pacmanConf.getDbPath();
+        
+        List wantedRepos = pacmanConf.getRepositories();
+
+        List<PacmanPkg> availablePackages = new ArrayList<PacmanPkg>();
+        
+        File[] repoDirs = dbPath.listFiles(directoryFilter);
+        
+        for (int i = 0; i < repoDirs.length; i++) {
+            if (wantedRepos.contains(repoDirs[i].getName())) {
+                File[] repoPackages = repoDirs[i].listFiles(directoryFilter);
+                for (int j = 0; j < repoPackages.length; j++) {
+                    try {
+                        PacmanPkg currentPkg = new PacmanPkg(repoPackages[j]);
+                        
+                        if (!currentPkg.getName().trim().equals("")) {
+                            int index = Collections.binarySearch(installedPackages, currentPkg, new PackageNameComparitor());
+                            if (index >= 0) {
+                                currentPkg.setInstalledVersion(((PacmanPkg)installedPackages.get(index)).getVersion());
+                            }
+                            if (currentPkg.isInstalled()) {                            
+                                index = Collections.binarySearch(availablePackages, currentPkg);
+                                if (index < 0) {
+                                    availablePackages.add((index + 1) * -1, currentPkg);
+                                }
+                            }
+                        }
+                        else {
+                           System.err.println("Package " + currentPkg.getName() + "(" + currentPkg.getVersion() + ") already exists.");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        
+        availablePkgList.addAll(availablePackages);
+
+
+    }
+    
     public static void findInstalledPackages(EventList installedPkgsList) {
         File dbPath = pacmanConf.getDbPath();
         ArrayList<PacmanPkg> installedPackages = new ArrayList<PacmanPkg>();
@@ -292,6 +352,8 @@ public class Jacman {
         installedPkgsList.addAll(installedPackages);
 
     }
+    
+    
     
     public static void findRollbackPackages(EventList rollbackPkgsList, MultiHashMap map) {
         //rollbackPkgsList = new BasicEventList();
@@ -574,15 +636,16 @@ public class Jacman {
             Box rangee = Box.createHorizontalBox();
             
             JLabel copyright;
-            rangee.add(copyright = new JLabel("© 2005 Andrew Roberts and the Jacman Team"));
+            rangee.add(copyright = new JLabel("Â© 2006 Andrew Roberts and the Jacman Team"));
             copyright.setFont(copyright.getFont().deriveFont(Font.BOLD));
             rangee.setBorder(new EmptyBorder(3, 3, 3, 3));
                       
             rangee.add(Box.createHorizontalGlue());
             
             JButton quitButton;
+            quitButton = new JButton(i18n.getString("JacmanFrameMenuFileQuit"), JacmanUtils.loadIcon("icons/exit.png"));
             
-            rangee.add(quitButton = new JButton(i18n.getString("JacmanFrameMenuFileQuit")), JacmanUtils.loadIcon("icons/exit.png"));
+            rangee.add(quitButton);
             
             quitButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
@@ -610,7 +673,8 @@ public class Jacman {
         
     public void createGUI() {
 
-        configureJGoodiesLAF();
+        //configureJGoodiesLAF();
+        configureSubstanceLAF();
         
         jacmanFrame = new JFrame("Jacman - " + JACMAN_VERSION_NUMBER);
         
@@ -635,7 +699,7 @@ public class Jacman {
             MoveResizeGlassPane.registerFrame(jacmanFrame);
         }   
         
-        if (jacmanProperties.getProperty("jacman.enableTray", "true").equals("true")) {
+        if (jacmanProperties.getProperty("jacman.enableTray", "false").equals("true")) {
         	new Tray(jacmanFrame, jacmanProperties);
             if (jacmanProperties.getProperty("jacman.startHiddenInTray", "false").equals("false"))
                 jacmanFrame.setVisible(true);
@@ -643,6 +707,21 @@ public class Jacman {
         
     }
     
+    private void configureSubstanceLAF() {
+        try {
+            SubstanceCremeLookAndFeel laf = new SubstanceCremeLookAndFeel();
+            //getFrame().getRootPane().putClientProperty(SubstanceLookAndFeel. NO_EXTRA_ELEMENTS, Boolean.TRUE);
+            //laf.setCurrentTheme(new SubstanceCremeTheme());
+            //-Dsubstancelaf.noExtraElements
+            UIManager.setLookAndFeel(laf);
+            
+        }
+        catch (UnsupportedLookAndFeelException e) {
+            System.err.println("Couldn't set Look and Feel to Substance.");
+            e.printStackTrace();
+        }
+        
+    }
 
     private void configureJGoodiesLAF() {
         Settings settings = Settings.createDefault();
@@ -696,6 +775,8 @@ public class Jacman {
          */
         
         try {
+            
+            System.setProperty("substancelaf.noExtraElements", "");
 
             String useaa = "true";
             
@@ -743,7 +824,7 @@ public class Jacman {
 
                     String filename = "";
 
-                    if (!args[0].equals("-t")) {
+                    if (!args[0].equals("-c")) {
                         throw new IllegalArgumentException(args[0]
                                 + ": argument not recognised.");
                     }
