@@ -58,7 +58,6 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import org.apache.commons.collections.MultiHashMap;
 
-import andyr.jacman.InstallListFilter;
 import andyr.jacman.InstalledPacmanPkg;
 import andyr.jacman.Jacman;
 import andyr.jacman.PackageComparitor;
@@ -281,6 +280,7 @@ public class RollbackPackageDialog extends JDialog {
         JPanel buttonPanel = new JPanel(new EqualsLayout(EqualsLayout.HORIZONTAL, EqualsLayout.RIGHT, 3));
         buttonPanel.setBorder(new EmptyBorder(3,3,3,3));
         JButton rollbackButton = new JButton(i18n.getString("RollbackDialogRollbackButton"));
+        rollbackButton.setIcon(JacmanUtils.loadIcon("icons/button_ok_16x16.png"));
         rollbackButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -315,6 +315,7 @@ public class RollbackPackageDialog extends JDialog {
         buttonPanel.add(rollbackButton);
         
         JButton closeButton = new JButton(i18n.getString("CloseButton"));
+        closeButton.setIcon(JacmanUtils.loadIcon("icons/button_cancel_16x16.png"));
         closeButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
