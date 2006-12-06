@@ -24,7 +24,8 @@ import java.io.*;
 
 public class PacmanPkg implements Comparable<PacmanPkg> {
 
-	protected String name = "";
+	private static final String NOT_INSTALLED_LABEL = "--";
+    protected String name = "";
 	protected String version = "";
 	protected String installedVersion = "";
 	protected String description = "";
@@ -41,7 +42,7 @@ public class PacmanPkg implements Comparable<PacmanPkg> {
 	public PacmanPkg(File packagePath) throws IOException {
 		obtainPackageInfo(packagePath);
 
-		setInstalledVersion("--");
+		setInstalledVersion(NOT_INSTALLED_LABEL);
 	}
 
 	protected void processInfoBuffer(String infoBuffer) {
@@ -216,6 +217,10 @@ public class PacmanPkg implements Comparable<PacmanPkg> {
 
 		depends.add(newDepend);
 	}
+    
+    public boolean isInstalled() {
+        return !getInstalledVersion().equals(NOT_INSTALLED_LABEL);
+    }
 
 	@Override
 	public String toString() {
