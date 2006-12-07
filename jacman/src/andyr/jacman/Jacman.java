@@ -144,7 +144,6 @@ public class Jacman {
 
             try {
                 pacmanConf = new PacmanConf(confPath);
-                System.out.println(pacmanConf.toString());
 
             }
             catch (FileNotFoundException e) {
