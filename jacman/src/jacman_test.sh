@@ -8,10 +8,10 @@
 
 LIB_DIR="../lib"
 
-LIBS="glazedlists-1.0.0.jar 
+LIBS="glazedlists-1.7.0_java15.jar 
 jdic.jar
 l2fprod-common-all.jar
-looks-1.2.2.jar"
+substance.jar"
 
 CLASSPATH="."
 

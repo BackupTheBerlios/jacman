@@ -1,8 +1,8 @@
 Jacman currently links to three 3rd-party projects.
 
-GlazedLists v0,9.6 (LGPL) 
+GlazedLists v1.7.0 (LGPL) 
 l2fprod-common v0.1 (Apache license) 
-JGoodies Looks 1.2.2 (BSD license)
+Substance 3.1 (BSD license)
 
 Icons are from the KDE project and the krystaline project.
 

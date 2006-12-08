@@ -34,3 +34,11 @@ Version 0.2 (25-06-05)
   - Console improved to display pacman output more smoothly (reduces flicker).
   - Added provisional support for tray. It's VERY experimental. 
   - build.xml for building Jacman with ant has been updated.
+ 
+ Version 0.4 (08-12-06)
+  - Integrated new Look and Feel (now use Substance LAF rather than JGoodies Looks).
+  - Updated GlazedLists to v1.7.
+  - Add icons to buttons to improve look and feel.
+  - Install Packages dialog has more filters.
+  - Install Pacakges table has colours to indicate in-date and out-of-date packages.
+  - Update Pacakges table has colours to indicate in-date and out-of-date packages.

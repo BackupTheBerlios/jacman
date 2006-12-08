@@ -2,7 +2,7 @@ Jacman - v0.3 - README
 ======================
 
 Andrew Roberts (dev [at] andy-roberts [dot] net)
-16th January 2006
+8th December 2006
 
 Overview
 ========
@@ -32,30 +32,19 @@ Jacman provides an interface to the most common functionality of Pacman:
  * removing unwanted packages.
  * rolling back packages to a previously installed version.
 
-What's New in 0.3?
+What's New in 0.4?
 ==================
 
-Nothing too major. It's mainly tidying up a lot of loose-ends and making the code
-more robust. Here's a quick summary:
-
-* Jon-Anders (SoniX) has been very busy. He did a lot of work in improving the 
-  console that displays the pacman output. Is now much smoother and looks even
-  better with its colour support.
-* Jon-Anders also implemented experimental system tray support. Implementation is
-  good on our end. Unfortunately, it turns out that the library (which is a wrapper
-  to a native library) is not the most stable thing at the moment. Still, do play
-  around to see what you think.
-* A proper preferences dialog has been implemented. There's not a great deal of 
-  properties that can be set at the moment. Still, it's better than editing the
-  jacman.properties file directly. (Note this saves user settings in ~/.jacman)
-* Changed default settings so that Jacman doesn't automatically shutdown after a 
-  successful package operation (e.g., install). That seemed to cause a lot of bad
-  press. It can be configured in the preferences dialog if you preferred the old
-  behaviour.
-* A simple language selection facility has been added. It does require a restart.
-  This will be much improved in future releases to (hopefully) provide live
-  language switching.
-* Improved and tweaked lots of other little bits-and-bobs under the hood.
+Nothing too major - largely cosmetic changes. I like to ensure Jacman stays well
+ahead in the eye candy department. It's not all bling, however. Here's a quick summary:
+ * New look and feel to the whole application. I think the theme is a lot lighter and
+   fresher. Look out for nice roll-over effects in tables, lists, buttons (especially
+   with icons), etc, etc. 
+ * More filtering options for install dialog.
+ * Improved search/filtering performance.
+ * Install and Update dialogs have coloured columns indicate whether packages are up-
+   to-date or now (a la distrowatch).
+ * Improved and tweaked a few of other little bits-and-bobs under the hood.
 
 Installation
 ============
@@ -64,11 +53,11 @@ Their are two ways to install Jacman.
 
 1. Download the prebuilt Pacman package and install as normal:
   - Download the Pacman package from 
-    http://download.berlios.de/jacman/jacman-0.3-1.pkg.tar.gz
-  - `pacman -U /path/to/jacman-0.3-1.pkg.tar.gz'
+    http://download.berlios.de/jacman/jacman-0.4.pkg.tar.gz
+  - `pacman -U /path/to/jacman-0.4.pkg.tar.gz'
 
   Or I understand you can specify URLs directly with pacman, e.g.:
-  `  pacman -U http://download.berlios.de/jacman/jacman-0.3-1.pkg.tar.gz'
+  `  pacman -U http://download.berlios.de/jacman/jacman-0.4.pkg.tar.gz'
 
 2. Jacman is is the Community repository. To access this with pacman, edit 
    /etc/pacman.conf and the instructions are in the file itself.
@@ -123,8 +112,8 @@ Berlios. Anyone interested in checking out the current development branch should
 head over to http://developer.berlios.de/projects/jacman/ for further details.
 If you want to join the Jacman development team, please contact me.
 
-Alternatively, the source for v0.3 is available at:
-http://download.berlios.de/jacman/jacman-0.3_src.jar
+Alternatively, the source for v0.4 is available at:
+http://download.berlios.de/jacman/jacman-0.4_src.jar
 
 Jacman has i18n support throughout and so I'm looking for translators. The 
 English labels file is called JacmanLabels.properties. If you translate this 
